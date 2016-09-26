@@ -1,6 +1,6 @@
 import random
 
-class Day():
+class Day:
     
     def __init__(self, Name):
         self.Name = Name
@@ -30,7 +30,7 @@ class Day():
         for sandwichmaker in [self.AMSandwichMaker, self.PMSandwichMaker]:
             if sandwichmaker in GrillerList:
                 GrillerList.remove(sandwichmaker)
-        if self.AMSandwichMaker != Tim:
+        if self.AMGrill != Tim:
             self.AMGrill, self.PMGrill = random.sample(GrillerList, 2)
         else:    
             self.PMGrill = random.choice(GrillerList)
@@ -51,7 +51,7 @@ class Day():
             self.PMDinners = random.choice(DinnerList)
    
 
-class Person():
+class Person:
 
     def __init__(self, Name):
         self.Name = Name
