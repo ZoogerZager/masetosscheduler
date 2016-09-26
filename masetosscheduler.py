@@ -17,7 +17,7 @@ class Day():
         
     def GenerateAndSetServers(self, ServerList, Total):
         servers = random.sample(ServerList, Total)
-        self.AMServers = servers[0:int(Total/2)]
+        self.AMServers = servers[0:max(2, int((Total/2)))]
         self.PMServers = servers[int(Total/2):Total]
         
     def GenerateAndSetKitchen(self, SandwichMakerList, GrillerList, HelperList, DinnerList):
@@ -52,6 +52,25 @@ class Person():
         self.CanServe = None
         self.CanDoDinners = None
         
+def PrintoutTest():
+    for day in Week:
+        try:
+            print('--', day.Name,' Staff --')
+            print('AMSandwichMaker: ', day.AMSandwichMaker.Name)
+            print('AMGrill: ', day.AMGrill.Name)
+            print('AMHelper: ', day.AMHelper.Name)
+            for server in day.AMServers:
+                print('AMServer: ', server.Name)
+            if day in [Wednesday, Thursday, Friday, Saturday]:
+                print('PMSandwichMaker: ', day.PMSandwichMaker.Name)
+                print('PMGrill: ', day.PMGrill.Name)
+                print('PMHelper: ', day.PMHelper.Name)
+                print('PMDinners: ', day.PMDinners.Name)
+                for server in day.PMServers:
+                    print('PMServer: ', server.Name)
+            print('\n')
+        except(AttributeError):
+            print('A position was not succesfully filled')
         
 Monday = Day('Monday')
 Tuesday = Day('Tuesday')
@@ -110,22 +129,11 @@ for day in Week:
             day.GenerateAndSetServers(Servers, 6)
     if day == Saturday:
         day.AMSandwichMaker, day.PMSandwichMaker = random.sample(SandwichMakers, 2)
-        day.AMGrill, day.PMGrill = random.sample(Grillers, 2) 
+        AvailableGrillers = Grillers
+        for SandwichMaker in [day.AMSandwichMaker, day.PMSandwichMaker]:
+            if SandwichMaker in AvailableGrillers:
+                AvailableGrillers.remove(SandwichMaker)
+        day.AMGrill, day.PMGrill = random.sample(AvailableGrillers, 2) 
         day.GenerateAndSetServers(Servers, 4)
 
-# Schedule Print Out        
-for day in Week:    
-    print('--', day.Name,' Staff --')
-    print('AMSandwichMaker: ', day.AMSandwichMaker.Name)
-    print('AMGrill: ', day.AMGrill.Name)
-    print('AMHelper: ', day.AMHelper.Name)
-    for server in day.AMServers:
-        print('AMServer: ', server.Name)
-    if day in [Wednesday, Thursday, Friday, Saturday]:
-        print('PMSandwichMaker: ', day.PMSandwichMaker.Name)
-        print('PMGrill: ', day.PMGrill.Name)
-        print('PMHelper: ', day.PMHelper.Name)
-        print('PMDinners: ', day.PMDinners.Name)
-        for server in day.PMServers:
-            print('PMServer: ', server.Name)
-    print('\n')
+PrintoutTest()
