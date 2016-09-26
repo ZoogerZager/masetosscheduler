@@ -21,16 +21,23 @@ class Day():
         self.PMServers = servers[int(Total/2):Total]
         
     def GenerateAndSetKitchen(self, SandwichMakerList, GrillerList, HelperList, DinnerList):
-        # Set SandwichMaker
-        self.PMSandwichMaker = random.choice(SandwichMakerList)
+        # Set SandwichMakers
+        if self.AMSandwichMaker != Lisa:
+            self.AMSandwichMaker, self.PMSandwichMaker = random.sample(SandwichMakerList, 2)
+        else:
+            self.PMSandwichMaker = random.choice(SandwichMakerList)
         
-        # Set Griller
-        if self.PMSandwichMaker in GrillerList:
-            GrillerList.remove(self.PMSandwichMaker)            
-        self.PMGrill = random.choice(GrillerList)
+        # Set Grillers
+        for sandwichmaker in [self.AMSandwichMaker, self.PMSandwichMaker]:
+            if sandwichmaker in GrillerList:
+                GrillerList.remove(sandwichmaker)
+        if self.AMSandwichMaker != Tim:
+            self.AMGrill, self.PMGrill = random.sample(GrillerList, 2)
+        else:    
+            self.PMGrill = random.choice(GrillerList)
         
         #Set Helpers
-        for person in [self.PMSandwichMaker, self.PMGrill]:
+        for person in [self.AMSandwichMaker, self.AMGrill, self.PMSandwichMaker, self.PMGrill]:
             if person in HelperList:
                 HelperList.remove(person)
         self.AMHelper, self.PMHelper = random.sample(HelperList, 2)
@@ -122,7 +129,7 @@ for dinner in Dinners:
     
 # Standard Schedule Setup. Being verbose with repetition rather than efficient.
 for day in Week:
-    if day in [Monday, Tuesday]
+    if day in [Monday, Tuesday]:
         day.AMSandwichMaker = Lisa
         day.AMGrill = Tim
         day.AMHelper = random.choice(Helpers)
@@ -132,23 +139,15 @@ for day in Week:
         day.AMGrill = Tim
         day.GenerateAndSetKitchen(SandwichMakers, Grillers, Helpers, Dinners)
         day.GenerateAndSetServers(Servers, 4)
+        day.PMDinners = EMPTY
     if day == Friday:
         day.AMSandwichMaker = Lisa
         day.AMGrill = Tim
         day.GenerateAndSetKitchen(SandwichMakers, Grillers, Helpers, Dinners)
         day.GenerateAndSetServers(Servers, 6)
     if day == Saturday:
-        day.AMSandwichMaker, day.PMSandwichMaker = random.sample(SandwichMakers, 2)
-        AvailableGrillers = Grillers
-        for SandwichMaker in [day.AMSandwichMaker, day.PMSandwichMaker]:
-            if SandwichMaker in AvailableGrillers:
-                AvailableGrillers.remove(SandwichMaker)
-        day.AMGrill, day.PMGrill = random.sample(AvailableGrillers, 2) 
-        AvailableHelpers = Helpers
-        for person in [day.AMSandwichMaker, day.PMSandwichMaker, day.AMGrill, day.PMGrill]:
-            if person in AvailableHelpers:
-                AvailableHelpers.remove(person)
-        day.AMHelper, day.PMHelper = random.sample(AvailableHelpers, 2)
+        day.GenerateAndSetKitchen(SandwichMakers, Grillers, Helpers, Dinners)
         day.GenerateAndSetServers(Servers, 4)
+        day.PMDinners = EMPTY
 
 PrintoutTest()
