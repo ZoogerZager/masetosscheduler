@@ -13,7 +13,6 @@ class Day():
         self.PMHelper = ''
         self.PMServers = []
         self.PMDinners = ''
-        self.trainees = []
         
     def GenerateAndSetServers(self, ServerList, Total):
         servers = random.sample(ServerList, Total)
@@ -106,8 +105,6 @@ Joe = Person('Joe')
 Sara = Person('Sara')
 EMPTY = Person('-EMPTY-') 
 
-# Leaving only People whose schedules are flexible.
-# Consider dividing into PM and AM Servers / Grillers.
 People = [Tammy, Lisa, Sherie, Tim, Peggy, Katie, Alex,
           Jamie, Rhiannon, Kara, Nathan, Johnny, Joe, Sara]
 SandwichMakers = [Katie, Rhiannon, Joe]
