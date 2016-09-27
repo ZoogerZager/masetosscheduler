@@ -37,53 +37,41 @@ class Day:
         for person in self.busy_persons():
             if person in position_list:
                 position_list.remove(person)
-        return choice(position_list)
-                     
-                    
-    def GenerateAndSetServers(self, AMServerList, PMServerList, Total):
-        PMServerList = copy(PMServerList)
-        AMTotal = max(int(Total / 2), 2)
-        PMTotal = ceil(Total / 2) # Handles odd number of input servers
-        self.AMServers = sample(AMServerList, AMTotal)
-        if Total > 2: # This handles Wednesday on.
-            for server in self.busy_persons():
-                if server in PMServerList:
-                    PMServerList.remove(server)
-            self.PMServers = sample(PMServerList, PMTotal)
+        try:
+            return choice(position_list)
+        except(IndexError):
+            print('A position was not succesfully filled.')
+            return EMPTY 
+            
+    def GenerateAndSetServers(self, AMTotal, PMTotal):
+        self.AMServers = []
+        self.PMServers = []
+        for server in range(AMTotal):
+            self.AMServers.append(self.set_position(AMServers))
+        for server in range(PMTotal):
+            self.PMServers.append(self.set_position(PMServers))
         
-    def GenerateAndSetKitchen(self, SandwichMakerList, GrillerList, HelperList, DinnerList):
-        # Make Shallow Copies of Data
-        SandwichMakerList = copy(SandwichMakerList)
-        GrillerList = copy(GrillerList)
-        HelperList = copy(HelperList)
-        DinnerList = copy(DinnerList)
-    
+    def GenerateAndSetKitchen(self):
         # Set SandwichMakers
         if self.AMSandwichMaker != Lisa:
-            self.AMSandwichMaker, self.PMSandwichMaker = sample(SandwichMakerList, 2)
+            self.AMSandwichMaker = self.set_position(SandwichMakers)
+            self.PMSandwichMaker = self.set_position(SandwichMakers)
         else:
-            self.PMSandwichMaker = choice(SandwichMakerList)
+            self.PMSandwichMaker = self.set_position(SandwichMakers)
         
         # Set Grillers
-        for sandwichmaker in self.busy_persons():
-            if sandwichmaker in GrillerList:
-                GrillerList.remove(sandwichmaker)
         if self.AMGrill != Tim:
-            self.AMGrill, self.PMGrill = sample(GrillerList, 2)
+            self.AMGrill = self.set_position(Grillers)
+            self.PMGrill = self.set_position(Grillers)
         else:    
-            self.PMGrill = choice(GrillerList)
+            self.PMGrill = self.set_position(Grillers)
         
         #Set Helpers
-        for person in self.busy_persons():
-            if person in HelperList:
-                HelperList.remove(person)
-        self.AMHelper, self.PMHelper = sample(HelperList, 2)
+        self.AMHelper = self.set_position(Helpers)
+        self.PMHelper = self.set_position(Helpers)
         
         #Set Dinners
-        for person in self.busy_persons():
-            if person in DinnerList:
-                DinnerList.remove(person)
-        self.PMDinners = choice(DinnerList)
+        self.PMDinners = self.set_position(Dinners)
    
 
 class Person:
@@ -119,21 +107,21 @@ def set_schedule(WeekList):
             day.AMSandwichMaker = Lisa
             day.AMGrill = Tim
             day.AMHelper = choice(Helpers)
-            day.GenerateAndSetServers(AMServers, PMServers, 2)
+            day.GenerateAndSetServers(AMTotal=2, PMTotal=0)
         if day in [Wednesday, Thursday]:
             day.AMSandwichMaker = Lisa
             day.AMGrill = Tim
-            day.GenerateAndSetKitchen(SandwichMakers, Grillers, Helpers, Dinners)
-            day.GenerateAndSetServers(AMServers, PMServers, 4)
+            day.GenerateAndSetKitchen()
+            day.GenerateAndSetServers(AMTotal=2, PMTotal=2)
             day.PMDinners = EMPTY
         if day == Friday:
             day.AMSandwichMaker = Lisa
             day.AMGrill = Tim
-            day.GenerateAndSetKitchen(SandwichMakers, Grillers, Helpers, Dinners)
-            day.GenerateAndSetServers(AMServers, PMServers, 6)
+            day.GenerateAndSetKitchen()
+            day.GenerateAndSetServers(AMTotal=3, PMTotal=3)
         if day == Saturday:
-            day.GenerateAndSetKitchen(SandwichMakers, Grillers, Helpers, Dinners)
-            day.GenerateAndSetServers(AMServers, PMServers, 4)
+            day.GenerateAndSetKitchen()
+            day.GenerateAndSetServers(AMTotal=2, PMTotal=2)
             day.PMDinners = EMPTY
         
 Monday = Day('Monday')
@@ -177,8 +165,8 @@ for dinner in Dinners:
     dinner.CanDoDinner = True
     
 
-# set_schedule(Week)
-# printout_test()
+set_schedule(Week)
+printout_test()
 Monday.AMGrill = Monday.set_position(Grillers)
 print(Monday.AMGrill.Name)
 
