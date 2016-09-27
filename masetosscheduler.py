@@ -161,6 +161,3 @@ Dinners = [Alex, Rhiannon, Kara, Nathan, Johnny, Joe, Katie]
 
 set_schedule(Week)
 printout_test()
-
-
-
