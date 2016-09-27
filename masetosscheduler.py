@@ -1,7 +1,5 @@
 from copy import copy
-from math import ceil
-from random import choice, sample
-
+from random import choice
 
 class Day:
     
