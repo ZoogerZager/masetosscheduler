@@ -16,6 +16,7 @@ class Day:
         self.PMHelper = None
         self.PMServers = None
         self.PMDinners = None
+        self.positions_not_filled = 0
         
     def busy_persons(self):
         '''Return Person Objects who are already scheduled in the Day object.'''
@@ -37,9 +38,11 @@ class Day:
         for person in self.busy_persons():
             if person in position_list:
                 position_list.remove(person)
+                
         try:
             return choice(position_list)
         except(IndexError):
+            self.positions_not_filled += 1
             print('A position was not succesfully filled.')
             return EMPTY 
             
@@ -53,14 +56,14 @@ class Day:
         
     def GenerateAndSetKitchen(self):
         # Set SandwichMakers
-        if self.AMSandwichMaker != Lisa:
+        if self.AMSandwichMaker == None:
             self.AMSandwichMaker = self.set_position(SandwichMakers)
             self.PMSandwichMaker = self.set_position(SandwichMakers)
         else:
             self.PMSandwichMaker = self.set_position(SandwichMakers)
         
         # Set Grillers
-        if self.AMGrill != Tim:
+        if self.AMGrill == None:
             self.AMGrill = self.set_position(Grillers)
             self.PMGrill = self.set_position(Grillers)
         else:    
@@ -99,6 +102,7 @@ def printout_test():
             print('PMDinners: ', day.PMDinners.Name)
             for server in day.PMServers:
                 print('PMServer: ', server.Name)
+        print('Positions not filled: ', day.positions_not_filled)
         print('\n')
             
 def set_schedule(WeekList):
@@ -155,20 +159,8 @@ AMServers = [Tammy, Sherie, Peggy, Jamie, Sara]
 PMServers = [Jamie, Rhiannon, Kara, Nathan, Sara]
 Dinners = [Alex, Rhiannon, Kara, Nathan, Johnny, Joe, Katie]
 
-for sandwichMaker in SandwichMakers:
-    sandwichMaker.CanDoSandwiches = True
-for griller in Grillers:
-    griller.CanDoGrill = True
-for helper in Helpers:
-    helper.CanDoHelper = True
-for dinner in Dinners:
-    dinner.CanDoDinner = True
-    
-
 set_schedule(Week)
 printout_test()
-Monday.AMGrill = Monday.set_position(Grillers)
-print(Monday.AMGrill.Name)
 
 
 
