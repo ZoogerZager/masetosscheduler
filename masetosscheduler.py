@@ -7,16 +7,32 @@ class Day:
     
     def __init__(self, Name):
         self.Name = Name
-        self.AMSandwichMaker = ''
-        self.AMGrill = ''
-        self.AMHelper = ''
-        self.AMServers = []
-        self.PMSandwichMaker = ''
-        self.PMGrill = ''
-        self.PMHelper = ''
-        self.PMServers = []
-        self.PMDinners = ''
+        self.AMSandwichMaker = None
+        self.AMGrill = None
+        self.AMHelper = None
+        self.AMServers = None
+        self.PMSandwichMaker = None
+        self.PMGrill = None
+        self.PMHelper = None
+        self.PMServers = None
+        self.PMDinners = None
         
+    def return_busy_persons(self):  # Want a better name
+        '''Return Person Objects who are already scheduled in the Day object.'''
+        BusyPersons = set()
+        positions = [self.AMSandwichMaker, self.AMGrill, self.AMHelper,
+                     self.AMSevers, self.PMSandwichMaker, self.PMGrill,
+                     self.PMHelper, self.PMServers, self.PMDinners]
+        positions = [item for item in positions if item != None]
+        for position in positions:
+            if type(position) == list:
+                for server in position:
+                    BusyPersons.add(server)
+            else:
+                BusyPersons.add(position)
+        return BusyPersons
+                    
+                    
     def GenerateAndSetServers(self, AMServerList, PMServerList, Total):
         PMServerList = copy(PMServerList)
         AMTotal = max(int(Total / 2), 2)
@@ -36,7 +52,6 @@ class Day:
         DinnerList = copy(DinnerList)
     
         # Set SandwichMakers
-        print('Grillers: ', len(Grillers))
         if self.AMSandwichMaker != Lisa:
             self.AMSandwichMaker, self.PMSandwichMaker = sample(SandwichMakerList, 2)
         else:
@@ -74,7 +89,6 @@ class Person:
         self.CanDoSandwiches = None
         self.CanDoGrill = None
         self.CanDoHelper = None
-        self.CanServe = None
         self.CanDoDinners = None
         
         
