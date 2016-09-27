@@ -1,5 +1,7 @@
-import random
 from copy import copy
+from math import ceil
+from random import choice, sample
+
 
 class Day:
     
@@ -15,10 +17,16 @@ class Day:
         self.PMServers = []
         self.PMDinners = ''
         
-    def GenerateAndSetServers(self, ServerList, Total):
-        servers = random.sample(ServerList, Total)
-        self.AMServers = servers[0:max(2, int((Total/2)))]
-        self.PMServers = servers[int(Total/2):Total]
+    def GenerateAndSetServers(self, AMServerList, PMServerList, Total):
+        PMServerList = copy(PMServerList)
+        AMTotal = max(int(Total / 2), 2)
+        PMTotal = ceil(Total / 2) # Handles odd number of input servers
+        self.AMServers = sample(AMServerList, AMTotal)
+        if Total > 2: # This handles Monday and Tuesday.
+            for server in self.AMServers:
+                if server in PMServerList:
+                    PMServerList.remove(server)
+            self.PMServers = sample(PMServerList, PMTotal)
         
     def GenerateAndSetKitchen(self, SandwichMakerList, GrillerList, HelperList, DinnerList):
         # Make Shallow Copies of Data
@@ -30,24 +38,24 @@ class Day:
         # Set SandwichMakers
         print('Grillers: ', len(Grillers))
         if self.AMSandwichMaker != Lisa:
-            self.AMSandwichMaker, self.PMSandwichMaker = random.sample(SandwichMakerList, 2)
+            self.AMSandwichMaker, self.PMSandwichMaker = sample(SandwichMakerList, 2)
         else:
-            self.PMSandwichMaker = random.choice(SandwichMakerList)
+            self.PMSandwichMaker = choice(SandwichMakerList)
         
         # Set Grillers
         for sandwichmaker in [self.AMSandwichMaker, self.PMSandwichMaker]:
             if sandwichmaker in GrillerList:
                 GrillerList.remove(sandwichmaker)
         if self.AMGrill != Tim:
-            self.AMGrill, self.PMGrill = random.sample(GrillerList, 2)
+            self.AMGrill, self.PMGrill = sample(GrillerList, 2)
         else:    
-            self.PMGrill = random.choice(GrillerList)
+            self.PMGrill = choice(GrillerList)
         
         #Set Helpers
         for person in [self.AMSandwichMaker, self.AMGrill, self.PMSandwichMaker, self.PMGrill]:
             if person in HelperList:
                 HelperList.remove(person)
-        self.AMHelper, self.PMHelper = random.sample(HelperList, 2)
+        self.AMHelper, self.PMHelper = sample(HelperList, 2)
         
         #Set Dinners
         for person in [self.PMSandwichMaker, self.PMGrill, self.AMHelper, self.PMHelper]:
@@ -56,7 +64,7 @@ class Day:
         if DinnerList == []:
             self.PMDinners = EMPTY
         else:
-            self.PMDinners = random.choice(DinnerList)
+            self.PMDinners = choice(DinnerList)
    
 
 class Person:
@@ -68,6 +76,7 @@ class Person:
         self.CanDoHelper = None
         self.CanServe = None
         self.CanDoDinners = None
+        
         
 def printout_test():
     for day in Week:
@@ -91,22 +100,22 @@ def set_schedule(WeekList):
         if day in [Monday, Tuesday]:
             day.AMSandwichMaker = Lisa
             day.AMGrill = Tim
-            day.AMHelper = random.choice(Helpers)
-            day.GenerateAndSetServers(Servers, 2)
+            day.AMHelper = choice(Helpers)
+            day.GenerateAndSetServers(AMServers, PMServers, 2)
         if day in [Wednesday, Thursday]:
             day.AMSandwichMaker = Lisa
             day.AMGrill = Tim
             day.GenerateAndSetKitchen(SandwichMakers, Grillers, Helpers, Dinners)
-            day.GenerateAndSetServers(Servers, 4)
+            day.GenerateAndSetServers(AMServers, PMServers, 4)
             day.PMDinners = EMPTY
         if day == Friday:
             day.AMSandwichMaker = Lisa
             day.AMGrill = Tim
             day.GenerateAndSetKitchen(SandwichMakers, Grillers, Helpers, Dinners)
-            day.GenerateAndSetServers(Servers, 6)
+            day.GenerateAndSetServers(AMServers, PMServers, 6)
         if day == Saturday:
             day.GenerateAndSetKitchen(SandwichMakers, Grillers, Helpers, Dinners)
-            day.GenerateAndSetServers(Servers, 4)
+            day.GenerateAndSetServers(AMServers, PMServers, 4)
             day.PMDinners = EMPTY
         
 Monday = Day('Monday')
@@ -133,12 +142,11 @@ Joe = Person('Joe')
 Sara = Person('Sara')
 EMPTY = Person('-EMPTY-') 
 
-People = [Tammy, Lisa, Sherie, Tim, Peggy, Katie, Alex,
-          Jamie, Rhiannon, Kara, Nathan, Johnny, Joe, Sara]
 SandwichMakers = [Katie, Rhiannon, Joe]
 Grillers = [Katie, Alex, Rhiannon, Nathan, Johnny, Joe]
 Helpers = [Katie, Alex, Rhiannon, Kara, Nathan, Johnny, Joe]
-Servers = [Tammy, Sherie, Peggy, Jamie, Rhiannon, Kara, Nathan, Sara]
+AMServers = [Tammy, Sherie, Peggy, Jamie, Sara]
+PMServers = [Jamie, Rhiannon, Kara, Nathan, Sara]
 Dinners = [Alex, Rhiannon, Kara, Nathan, Johnny, Joe, Katie]
 
 for sandwichMaker in SandwichMakers:
@@ -147,8 +155,6 @@ for griller in Grillers:
     griller.CanDoGrill = True
 for helper in Helpers:
     helper.CanDoHelper = True
-for server in Servers:
-    server.CanServe = True
 for dinner in Dinners:
     dinner.CanDoDinner = True
     
