@@ -17,11 +17,11 @@ class Day:
         self.PMServers = None
         self.PMDinners = None
         
-    def return_busy_persons(self):  # Want a better name
+    def busy_persons(self):
         '''Return Person Objects who are already scheduled in the Day object.'''
         BusyPersons = set()
         positions = [self.AMSandwichMaker, self.AMGrill, self.AMHelper,
-                     self.AMSevers, self.PMSandwichMaker, self.PMGrill,
+                     self.AMServers, self.PMSandwichMaker, self.PMGrill,
                      self.PMHelper, self.PMServers, self.PMDinners]
         positions = [item for item in positions if item != None]
         for position in positions:
@@ -31,15 +31,15 @@ class Day:
             else:
                 BusyPersons.add(position)
         return BusyPersons
-                    
+                     
                     
     def GenerateAndSetServers(self, AMServerList, PMServerList, Total):
         PMServerList = copy(PMServerList)
         AMTotal = max(int(Total / 2), 2)
         PMTotal = ceil(Total / 2) # Handles odd number of input servers
         self.AMServers = sample(AMServerList, AMTotal)
-        if Total > 2: # This handles Monday and Tuesday.
-            for server in self.AMServers:
+        if Total > 2: # This handles Wednesday on.
+            for server in self.busy_persons():
                 if server in PMServerList:
                     PMServerList.remove(server)
             self.PMServers = sample(PMServerList, PMTotal)
@@ -58,7 +58,7 @@ class Day:
             self.PMSandwichMaker = choice(SandwichMakerList)
         
         # Set Grillers
-        for sandwichmaker in [self.AMSandwichMaker, self.PMSandwichMaker]:
+        for sandwichmaker in self.busy_persons():
             if sandwichmaker in GrillerList:
                 GrillerList.remove(sandwichmaker)
         if self.AMGrill != Tim:
@@ -67,19 +67,16 @@ class Day:
             self.PMGrill = choice(GrillerList)
         
         #Set Helpers
-        for person in [self.AMSandwichMaker, self.AMGrill, self.PMSandwichMaker, self.PMGrill]:
+        for person in self.busy_persons():
             if person in HelperList:
                 HelperList.remove(person)
         self.AMHelper, self.PMHelper = sample(HelperList, 2)
         
         #Set Dinners
-        for person in [self.PMSandwichMaker, self.PMGrill, self.AMHelper, self.PMHelper]:
+        for person in self.busy_persons():
             if person in DinnerList:
                 DinnerList.remove(person)
-        if DinnerList == []:
-            self.PMDinners = EMPTY
-        else:
-            self.PMDinners = choice(DinnerList)
+        self.PMDinners = choice(DinnerList)
    
 
 class Person:
