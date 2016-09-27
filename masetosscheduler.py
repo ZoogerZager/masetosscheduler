@@ -55,21 +55,12 @@ class Day:
             self.PMServers.append(self.set_position(PMServers))
         
     def GenerateAndSetKitchen(self):
-        # Set SandwichMakers
         if self.AMSandwichMaker == None:
             self.AMSandwichMaker = self.set_position(SandwichMakers)
-            self.PMSandwichMaker = self.set_position(SandwichMakers)
-        else:
-            self.PMSandwichMaker = self.set_position(SandwichMakers)
-        
-        # Set Grillers
+        self.PMSandwichMaker = self.set_position(SandwichMakers)
         if self.AMGrill == None:
             self.AMGrill = self.set_position(Grillers)
-            self.PMGrill = self.set_position(Grillers)
-        else:    
-            self.PMGrill = self.set_position(Grillers)
-        
-        #Set Helpers
+        self.PMGrill = self.set_position(Grillers)
         self.AMHelper = self.set_position(Helpers)
         self.PMHelper = self.set_position(Helpers)
  
@@ -78,11 +69,7 @@ class Person:
 
     def __init__(self, Name):
         self.Name = Name
-        self.CanDoSandwiches = None
-        self.CanDoGrill = None
-        self.CanDoHelper = None
-        self.CanDoDinners = None
-        
+
         
 def printout_test():
     for day in Week:
