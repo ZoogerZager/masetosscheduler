@@ -31,6 +31,13 @@ class Day:
             else:
                 BusyPersons.add(position)
         return BusyPersons
+        
+    def set_position(self, position_list):
+        position_list = copy(position_list)
+        for person in self.busy_persons():
+            if person in position_list:
+                position_list.remove(person)
+        return choice(position_list)
                      
                     
     def GenerateAndSetServers(self, AMServerList, PMServerList, Total):
@@ -169,6 +176,11 @@ for helper in Helpers:
 for dinner in Dinners:
     dinner.CanDoDinner = True
     
-   
-set_schedule(Week)        
-printout_test()
+
+# set_schedule(Week)
+# printout_test()
+Monday.AMGrill = Monday.set_position(Grillers)
+print(Monday.AMGrill.Name)
+
+
+
