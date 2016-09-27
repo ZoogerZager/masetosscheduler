@@ -1,4 +1,5 @@
 import random
+from copy import copy
 
 class Day:
     
@@ -20,7 +21,14 @@ class Day:
         self.PMServers = servers[int(Total/2):Total]
         
     def GenerateAndSetKitchen(self, SandwichMakerList, GrillerList, HelperList, DinnerList):
+        # Make Shallow Copies of Data
+        SandwichMakerList = copy(SandwichMakerList)
+        GrillerList = copy(GrillerList)
+        HelperList = copy(HelperList)
+        DinnerList = copy(DinnerList)
+    
         # Set SandwichMakers
+        print('Grillers: ', len(Grillers))
         if self.AMSandwichMaker != Lisa:
             self.AMSandwichMaker, self.PMSandwichMaker = random.sample(SandwichMakerList, 2)
         else:
@@ -61,25 +69,45 @@ class Person:
         self.CanServe = None
         self.CanDoDinners = None
         
-def PrintoutTest():
+def printout_test():
     for day in Week:
-        try:
-            print('--', day.Name,' Staff --')
-            print('AMSandwichMaker: ', day.AMSandwichMaker.Name)
-            print('AMGrill: ', day.AMGrill.Name)
-            print('AMHelper: ', day.AMHelper.Name)
-            for server in day.AMServers:
-                print('AMServer: ', server.Name)
-            if day in [Wednesday, Thursday, Friday, Saturday]:
-                print('PMSandwichMaker: ', day.PMSandwichMaker.Name)
-                print('PMGrill: ', day.PMGrill.Name)
-                print('PMHelper: ', day.PMHelper.Name)
-                print('PMDinners: ', day.PMDinners.Name)
-                for server in day.PMServers:
-                    print('PMServer: ', server.Name)
-            print('\n')
-        except(AttributeError):
-            print('A position was not succesfully filled')
+        print('--', day.Name,' Staff --')
+        print('AMSandwichMaker: ', day.AMSandwichMaker.Name)
+        print('AMGrill: ', day.AMGrill.Name)
+        print('AMHelper: ', day.AMHelper.Name)
+        for server in day.AMServers:
+            print('AMServer: ', server.Name)
+        if day in [Wednesday, Thursday, Friday, Saturday]:
+            print('PMSandwichMaker: ', day.PMSandwichMaker.Name)
+            print('PMGrill: ', day.PMGrill.Name)
+            print('PMHelper: ', day.PMHelper.Name)
+            print('PMDinners: ', day.PMDinners.Name)
+            for server in day.PMServers:
+                print('PMServer: ', server.Name)
+        print('\n')
+            
+def set_schedule(WeekList):
+    for day in WeekList:
+        if day in [Monday, Tuesday]:
+            day.AMSandwichMaker = Lisa
+            day.AMGrill = Tim
+            day.AMHelper = random.choice(Helpers)
+            day.GenerateAndSetServers(Servers, 2)
+        if day in [Wednesday, Thursday]:
+            day.AMSandwichMaker = Lisa
+            day.AMGrill = Tim
+            day.GenerateAndSetKitchen(SandwichMakers, Grillers, Helpers, Dinners)
+            day.GenerateAndSetServers(Servers, 4)
+            day.PMDinners = EMPTY
+        if day == Friday:
+            day.AMSandwichMaker = Lisa
+            day.AMGrill = Tim
+            day.GenerateAndSetKitchen(SandwichMakers, Grillers, Helpers, Dinners)
+            day.GenerateAndSetServers(Servers, 6)
+        if day == Saturday:
+            day.GenerateAndSetKitchen(SandwichMakers, Grillers, Helpers, Dinners)
+            day.GenerateAndSetServers(Servers, 4)
+            day.PMDinners = EMPTY
         
 Monday = Day('Monday')
 Tuesday = Day('Tuesday')
@@ -124,27 +152,6 @@ for server in Servers:
 for dinner in Dinners:
     dinner.CanDoDinner = True
     
-# Standard Schedule Setup. Being verbose with repetition rather than efficient.
-for day in Week:
-    if day in [Monday, Tuesday]:
-        day.AMSandwichMaker = Lisa
-        day.AMGrill = Tim
-        day.AMHelper = random.choice(Helpers)
-        day.GenerateAndSetServers(Servers, 2)
-    if day in [Wednesday, Thursday]:
-        day.AMSandwichMaker = Lisa
-        day.AMGrill = Tim
-        day.GenerateAndSetKitchen(SandwichMakers, Grillers, Helpers, Dinners)
-        day.GenerateAndSetServers(Servers, 4)
-        day.PMDinners = EMPTY
-    if day == Friday:
-        day.AMSandwichMaker = Lisa
-        day.AMGrill = Tim
-        day.GenerateAndSetKitchen(SandwichMakers, Grillers, Helpers, Dinners)
-        day.GenerateAndSetServers(Servers, 6)
-    if day == Saturday:
-        day.GenerateAndSetKitchen(SandwichMakers, Grillers, Helpers, Dinners)
-        day.GenerateAndSetServers(Servers, 4)
-        day.PMDinners = EMPTY
-
-PrintoutTest()
+   
+set_schedule(Week)        
+printout_test()
