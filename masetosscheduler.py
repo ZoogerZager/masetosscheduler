@@ -72,10 +72,7 @@ class Day:
         #Set Helpers
         self.AMHelper = self.set_position(Helpers)
         self.PMHelper = self.set_position(Helpers)
-        
-        #Set Dinners
-        self.PMDinners = self.set_position(Dinners)
-   
+ 
 
 class Person:
 
@@ -99,7 +96,10 @@ def printout_test():
             print('PMSandwichMaker: ', day.PMSandwichMaker.Name)
             print('PMGrill: ', day.PMGrill.Name)
             print('PMHelper: ', day.PMHelper.Name)
-            print('PMDinners: ', day.PMDinners.Name)
+            try:
+                print('PMDinners: ', day.PMDinners.Name)
+            except(AttributeError):
+                pass
             for server in day.PMServers:
                 print('PMServer: ', server.Name)
         print('Positions not filled: ', day.positions_not_filled)
@@ -110,23 +110,22 @@ def set_schedule(WeekList):
         if day in [Monday, Tuesday]:
             day.AMSandwichMaker = Lisa
             day.AMGrill = Tim
-            day.AMHelper = choice(Helpers)
+            day.AMHelper = day.set_position(Helpers)
             day.GenerateAndSetServers(AMTotal=2, PMTotal=0)
         if day in [Wednesday, Thursday]:
             day.AMSandwichMaker = Lisa
             day.AMGrill = Tim
             day.GenerateAndSetKitchen()
             day.GenerateAndSetServers(AMTotal=2, PMTotal=2)
-            day.PMDinners = EMPTY
         if day == Friday:
             day.AMSandwichMaker = Lisa
             day.AMGrill = Tim
             day.GenerateAndSetKitchen()
             day.GenerateAndSetServers(AMTotal=3, PMTotal=3)
+            day.PMDinners = day.set_position(Dinners)
         if day == Saturday:
             day.GenerateAndSetKitchen()
             day.GenerateAndSetServers(AMTotal=2, PMTotal=2)
-            day.PMDinners = EMPTY
         
 Monday = Day('Monday')
 Tuesday = Day('Tuesday')
