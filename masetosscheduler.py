@@ -8,14 +8,18 @@ class Day:
         self.AMSandwichMaker = None
         self.AMGrill = None
         self.AMHelper = None
-        self.AMServers = None
+        self.AMServers = []
         self.PMSandwichMaker = None
         self.PMGrill = None
         self.PMHelper = None
-        self.PMServers = None
+        self.PMServers = []
         self.PMDinners = None
         self.BusyPersons = set()
         self.positions_not_filled = 0
+        
+    def set_position_manually(self, person):
+        self.BusyPersons.add(person)
+        return person
         
     def set_position(self, position_list):
         position_list = copy(position_list)
@@ -31,8 +35,8 @@ class Day:
             return EMPTY 
             
     def GenerateAndSetServers(self, AMTotal, PMTotal):
-        self.AMServers = []
-        self.PMServers = []
+        AMTotal = AMTotal - len(self.AMServers) # subtract servers manually set
+        PMTotal = PMTotal - len(self.PMServers)
         for server in range(AMTotal):
             self.AMServers.append(self.set_position(AMServers))
         for server in range(PMTotal):
@@ -79,24 +83,19 @@ def printout_test():
 def set_schedule(WeekList):
     for day in WeekList:
         if day in [Monday, Tuesday]:
-            day.AMSandwichMaker = Lisa
-            day.BusyPersons.add(Lisa)
-            day.AMGrill = Tim
-            day.BusyPersons.add(Tim)
+            day.AMSandwichMaker = day.set_position_manually(Lisa)
+            day.AMGrill = day.set_position_manually(Tim)
             day.AMHelper = day.set_position(Helpers)
             day.GenerateAndSetServers(AMTotal=2, PMTotal=0)
         if day in [Wednesday, Thursday]:
-            day.AMSandwichMaker = Lisa
-            day.BusyPersons.add(Lisa)
-            day.AMGrill = Tim
-            day.BusyPersons.add(Tim)
+            day.AMSandwichMaker = day.set_position_manually(Lisa)
+            day.AMGrill = day.set_position_manually(Tim)
             day.GenerateAndSetKitchen()
             day.GenerateAndSetServers(AMTotal=2, PMTotal=2)
         if day == Friday:
-            day.AMSandwichMaker = Lisa
-            day.BusyPersons.add(Lisa)
-            day.AMGrill = Tim
-            day.BusyPersons.add(Tim)
+            day.AMSandwichMaker = day.set_position_manually(Lisa)
+            day.AMGrill = day.set_position_manually(Tim)
+            day.AMServers = [day.set_position_manually(Sherie)]
             day.GenerateAndSetKitchen()
             day.GenerateAndSetServers(AMTotal=3, PMTotal=3)
             day.PMDinners = day.set_position(Dinners)
@@ -137,3 +136,4 @@ Dinners = [Alex, Rhiannon, Kara, Nathan, Johnny, Joe, Katie]
 
 set_schedule(Week)
 printout_test()
+
