@@ -14,34 +14,20 @@ class Day:
         self.PMHelper = None
         self.PMServers = None
         self.PMDinners = None
+        self.BusyPersons = set()
         self.positions_not_filled = 0
-        
-    def busy_persons(self):
-        '''Return Person Objects who are already scheduled in the Day object.'''
-        BusyPersons = set()
-        positions = [self.AMSandwichMaker, self.AMGrill, self.AMHelper,
-                     self.AMServers, self.PMSandwichMaker, self.PMGrill,
-                     self.PMHelper, self.PMServers, self.PMDinners]
-        positions = [item for item in positions if item != None]
-        for position in positions:
-            if type(position) == list:
-                for server in position:
-                    BusyPersons.add(server)
-            else:
-                BusyPersons.add(position)
-        return BusyPersons
         
     def set_position(self, position_list):
         position_list = copy(position_list)
-        for person in self.busy_persons():
+        for person in self.BusyPersons:
             if person in position_list:
                 position_list.remove(person)
-                
         try:
-            return choice(position_list)
+            chosen = choice(position_list)
+            self.BusyPersons.add(chosen)
+            return chosen
         except(IndexError):
             self.positions_not_filled += 1
-            print('A position was not succesfully filled.')
             return EMPTY 
             
     def GenerateAndSetServers(self, AMTotal, PMTotal):
@@ -94,17 +80,23 @@ def set_schedule(WeekList):
     for day in WeekList:
         if day in [Monday, Tuesday]:
             day.AMSandwichMaker = Lisa
+            day.BusyPersons.add(Lisa)
             day.AMGrill = Tim
+            day.BusyPersons.add(Tim)
             day.AMHelper = day.set_position(Helpers)
             day.GenerateAndSetServers(AMTotal=2, PMTotal=0)
         if day in [Wednesday, Thursday]:
             day.AMSandwichMaker = Lisa
+            day.BusyPersons.add(Lisa)
             day.AMGrill = Tim
+            day.BusyPersons.add(Tim)
             day.GenerateAndSetKitchen()
             day.GenerateAndSetServers(AMTotal=2, PMTotal=2)
         if day == Friday:
             day.AMSandwichMaker = Lisa
+            day.BusyPersons.add(Lisa)
             day.AMGrill = Tim
+            day.BusyPersons.add(Tim)
             day.GenerateAndSetKitchen()
             day.GenerateAndSetServers(AMTotal=3, PMTotal=3)
             day.PMDinners = day.set_position(Dinners)
