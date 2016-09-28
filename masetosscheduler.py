@@ -35,22 +35,27 @@ class Day:
             return EMPTY 
             
     def GenerateAndSetServers(self, AMTotal, PMTotal):
-        AMTotal = AMTotal - len(self.AMServers) # subtract servers manually set
+        AMTotal = AMTotal - len(self.AMServers) # subtract servers set manually.
         PMTotal = PMTotal - len(self.PMServers)
         for server in range(AMTotal):
             self.AMServers.append(self.set_position(AMServers))
         for server in range(PMTotal):
             self.PMServers.append(self.set_position(PMServers))
-        
+    
     def GenerateAndSetKitchen(self):
+        """This really sucks and there's probably a better way"""
         if self.AMSandwichMaker == None:
             self.AMSandwichMaker = self.set_position(SandwichMakers)
-        self.PMSandwichMaker = self.set_position(SandwichMakers)
+        if self.PMSandwichMaker == None:
+            self.PMSandwichMaker = self.set_position(SandwichMakers)
         if self.AMGrill == None:
             self.AMGrill = self.set_position(Grillers)
-        self.PMGrill = self.set_position(Grillers)
-        self.AMHelper = self.set_position(Helpers)
-        self.PMHelper = self.set_position(Helpers)
+        if self.PMGrill == None:
+            self.PMGrill = self.set_position(Grillers)
+        if self.AMHelper == None:
+            self.AMHelper = self.set_position(Helpers)
+        if self.PMHelper == None:
+            self.PMHelper = self.set_position(Helpers)
  
 
 class Person:
@@ -87,7 +92,13 @@ def set_schedule(WeekList):
             day.AMGrill = day.set_position_manually(Tim)
             day.AMHelper = day.set_position(Helpers)
             day.GenerateAndSetServers(AMTotal=2, PMTotal=0)
-        if day in [Wednesday, Thursday]:
+        if day == Wednesday:
+            day.AMSandwichMaker = day.set_position_manually(Lisa)
+            day.AMGrill = day.set_position_manually(Tim)
+            day.AMServers.append(day.set_position_manually(Sherie))
+            day.GenerateAndSetKitchen()
+            day.GenerateAndSetServers(AMTotal=2, PMTotal=2)
+        if day == Thursday:
             day.AMSandwichMaker = day.set_position_manually(Lisa)
             day.AMGrill = day.set_position_manually(Tim)
             day.GenerateAndSetKitchen()
@@ -95,7 +106,7 @@ def set_schedule(WeekList):
         if day == Friday:
             day.AMSandwichMaker = day.set_position_manually(Lisa)
             day.AMGrill = day.set_position_manually(Tim)
-            day.AMServers = [day.set_position_manually(Sherie)]
+            day.AMServers.append(day.set_position_manually(Sherie))
             day.GenerateAndSetKitchen()
             day.GenerateAndSetServers(AMTotal=3, PMTotal=3)
             day.PMDinners = day.set_position(Dinners)
