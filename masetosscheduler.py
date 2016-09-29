@@ -66,8 +66,10 @@ class Day:
 
 
 class Person:
-    def __init__(self, name):
+    def __init__(self, name, positions):
         self.name = name
+        assert isinstance(positions, list), "%r is not a list" % positions
+        self.positions = positions
 
 
 def set_schedule(week_list):
@@ -131,28 +133,30 @@ Friday = Day('Friday')
 Saturday = Day('Saturday')
 Week = [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday]
 
-Tammy = Person('Tammy')
-Lisa = Person('Lisa')
-Sherie = Person('Sherie')
-Tim = Person('Tim')
-Peggy = Person('Peggy')
-Katie = Person('Katie')
-Alex = Person('Alex')
-Jamie = Person('Jamie')
-Rhiannon = Person('Rhiannon')
-Kara = Person('Kara')
-Nathan = Person('Nathan')
-Johnny = Person('Johnny')
-Joe = Person('Joe')
-Sara = Person('Sara')
-EMPTY = Person('-EMPTY-')
+Tammy = Person('Tammy', ['AMServer'])
+Lisa = Person('Lisa', ['SandwichMaker'] )
+Sherie = Person('Sherie', ['AMServer'])
+Tim = Person('Tim', ['Griller'])
+Peggy = Person('Peggy', ['AMServer'])
+Katie = Person('Katie', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'])
+Alex = Person('Alex', ['Grill', 'Helper', 'Dinners'])
+Jamie = Person('Jamie', ['AMServer', 'PMServer'])
+Rhiannon = Person('Rhiannon', ['SandwichMaker', 'Grill', 'Helper', 'PMServer', 'Dinners'])
+Kara = Person('Kara', ['Helper', 'PMServer', 'Dinners'])
+Nathan = Person('Nathan', ['Griller', 'Helper', 'PMServer', 'Dinners'])
+Johnny = Person('Johnny', ['Griller', 'Helper'])
+Joe = Person('Joe', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'])
+Sara = Person('Sara', ['AMServer', 'PMServer'])
+EMPTY = Person('-EMPTY-', [])
 
-SandwichMakers = [Katie, Rhiannon, Joe]
-Grillers = [Katie, Alex, Rhiannon, Nathan, Johnny, Joe]
-Helpers = [Katie, Alex, Rhiannon, Kara, Nathan, Johnny, Joe]
-AMServers = [Tammy, Sherie, Peggy, Jamie, Sara]
-PMServers = [Jamie, Rhiannon, Kara, Nathan, Sara]
-Dinners = [Alex, Rhiannon, Kara, Nathan, Johnny, Joe, Katie]
+People = [Tammy, Lisa, Sherie, Tim, Peggy, Katie, Alex, Jamie, Rhiannon, Kara,
+          Nathan, Johnny, Joe, Sara]
+SandwichMakers = [person for person in People if 'SandwichMaker' in person.positions]
+Grillers = [person for person in People if 'Griller' in person.positions]
+Helpers = [person for person in People if 'Helper' in person.positions]
+AMServers = [person for person in People if 'AMServer' in person.positions]
+PMServers = [person for person in People if 'PMServer' in person.positions]
+Dinners = [person for person in People if 'Dinners' in person.positions]
 
 set_schedule(Week)
 printout_test()
