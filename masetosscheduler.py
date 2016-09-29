@@ -45,17 +45,17 @@ class Day:
     
     def set_kitchen(self):
         """This really sucks and there's probably a better way"""
-        if self.AMSandwichMaker == None:
+        if self.AMSandwichMaker is None:
             self.AMSandwichMaker = self.set_position(SandwichMakers)
-        if self.PMSandwichMaker == None:
+        if self.PMSandwichMaker is None:
             self.PMSandwichMaker = self.set_position(SandwichMakers)
-        if self.AMGrill == None:
+        if self.AMGrill is None:
             self.AMGrill = self.set_position(Grillers)
-        if self.PMGrill == None:
+        if self.PMGrill is None:
             self.PMGrill = self.set_position(Grillers)
-        if self.AMHelper == None:
+        if self.AMHelper is None:
             self.AMHelper = self.set_position(Helpers)
-        if self.PMHelper == None:
+        if self.PMHelper is None:
             self.PMHelper = self.set_position(Helpers)
  
 
@@ -67,7 +67,7 @@ class Person:
         
 def printout_test():
     for day in Week:
-        print('--', day.name,' Staff --')
+        print('--', day.name, ' Staff --')
         print('AMSandwichMaker: ', day.AMSandwichMaker.name)
         print('AMGrill: ', day.AMGrill.name)
         print('AMHelper: ', day.AMHelper.name)
@@ -79,15 +79,16 @@ def printout_test():
             print('PMHelper: ', day.PMHelper.name)
             try:
                 print('PMDinners: ', day.PMDinners.name)
-            except(AttributeError):
+            except AttributeError:
                 pass
             for server in day.PMServers:
                 print('PMServer: ', server.name)
         print('Positions not filled: ', day.positions_not_filled)
         print('\n')
-            
-def set_schedule(WeekList):
-    for day in WeekList:
+
+
+def set_schedule(week_list):
+    for day in week_list:
         if day in [Monday, Tuesday]:
             day.AMSandwichMaker = day.set_position_manually(Lisa)
             day.AMGrill = day.set_position_manually(Tim)
