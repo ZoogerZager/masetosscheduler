@@ -48,17 +48,17 @@ class Day:
             self.PMServers.append(self.set_position(PMServers))
 
     def set_kitchen(self):
-        if self.AMSandwichMaker == None:
+        if self.AMSandwichMaker is None:
             self.AMSandwichMaker = self.set_position(SandwichMakers)
-        if self.PMSandwichMaker == None:
+        if self.PMSandwichMaker is None:
             self.PMSandwichMaker = self.set_position(SandwichMakers)
-        if self.AMGrill == None:
+        if self.AMGrill is None:
             self.AMGrill = self.set_position(Grillers)
-        if self.PMGrill == None:
+        if self.PMGrill is None:
             self.PMGrill = self.set_position(Grillers)
-        if self.AMHelper == None:
+        if self.AMHelper is None:
             self.AMHelper = self.set_position(Helpers)
-        if self.PMHelper == None:
+        if self.PMHelper is None:
             self.PMHelper = self.set_position(Helpers)
 
 
@@ -75,27 +75,28 @@ def set_schedule(week_list):
             day.AMGrill = day.set_position_manually(Tim)
             day.AMHelper = day.set_position(Helpers)
             day.set_servers(am_total=2, pm_total=0)
-        if day == Wednesday:
+        if day is Wednesday:
             day.AMSandwichMaker = day.set_position_manually(Lisa)
             day.AMGrill = day.set_position_manually(Tim)
             day.AMServers.append(day.set_position_manually(Sherie))
             day.set_kitchen()
             day.set_servers(am_total=2, pm_total=2)
-        if day == Thursday:
+        if day is Thursday:
             day.AMSandwichMaker = day.set_position_manually(Lisa)
             day.AMGrill = day.set_position_manually(Tim)
             day.set_kitchen()
             day.set_servers(am_total=2, pm_total=2)
-        if day == Friday:
+        if day is Friday:
             day.AMSandwichMaker = day.set_position_manually(Lisa)
             day.AMGrill = day.set_position_manually(Tim)
             day.AMServers.append(day.set_position_manually(Sherie))
             day.set_kitchen()
             day.set_servers(am_total=3, pm_total=3)
             day.PMDinners = day.set_position(Dinners)
-        if day == Saturday:
+        if day is Saturday:
             day.set_kitchen()
             day.set_servers(am_total=2, pm_total=2)
+
 
 def printout_test():
     for day in Week:
