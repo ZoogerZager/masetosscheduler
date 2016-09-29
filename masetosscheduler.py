@@ -26,13 +26,16 @@ class Day:
         self.BusyPersons.add(person)
         return person
 
-    def set_position(self, position_list):
+    def get_free_employees(self, position_list):
         position_list = copy(position_list)
         for person in self.BusyPersons:
             if person in position_list:
                 position_list.remove(person)
+        return position_list
+
+    def set_position(self, position_list):
         try:
-            chosen = choice(position_list)
+            chosen = choice(self.get_free_employees(position_list))
             self.BusyPersons.add(chosen)
             return chosen
         except IndexError:
