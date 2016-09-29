@@ -17,6 +17,10 @@ class Day:
         self.BusyPersons = set()
         self.positions_not_filled = 0
 
+    def not_available(self, person):
+        assert isinstance(person, Person), "%r is not a Person Object" % person
+        self.BusyPersons.add(person)
+
     def set_position_manually(self, person):
         assert isinstance(person, Person), "%r is not a Person Object" % person
         self.BusyPersons.add(person)
@@ -60,28 +64,6 @@ class Person:
         self.name = name
 
 
-def printout_test():
-    for day in Week:
-        print('--', day.name, ' Staff --')
-        print('AMSandwichMaker: ', day.AMSandwichMaker.name)
-        print('AMGrill: ', day.AMGrill.name)
-        print('AMHelper: ', day.AMHelper.name)
-        for server in day.AMServers:
-            print('AMServer: ', server.name)
-        if day in [Wednesday, Thursday, Friday, Saturday]:
-            print('PMSandwichMaker: ', day.PMSandwichMaker.name)
-            print('PMGrill: ', day.PMGrill.name)
-            print('PMHelper: ', day.PMHelper.name)
-            try:
-                print('PMDinners: ', day.PMDinners.name)
-            except AttributeError:
-                pass
-            for server in day.PMServers:
-                print('PMServer: ', server.name)
-        print('Positions not filled: ', day.positions_not_filled)
-        print('\n')
-
-
 def set_schedule(week_list):
     for day in week_list:
         if day in [Monday, Tuesday]:
@@ -110,6 +92,27 @@ def set_schedule(week_list):
         if day == Saturday:
             day.set_kitchen()
             day.set_servers(am_total=2, pm_total=2)
+
+def printout_test():
+    for day in Week:
+        print('--', day.name, ' Staff --')
+        print('AMSandwichMaker: ', day.AMSandwichMaker.name)
+        print('AMGrill: ', day.AMGrill.name)
+        print('AMHelper: ', day.AMHelper.name)
+        for server in day.AMServers:
+            print('AMServer: ', server.name)
+        if day in [Wednesday, Thursday, Friday, Saturday]:
+            print('PMSandwichMaker: ', day.PMSandwichMaker.name)
+            print('PMGrill: ', day.PMGrill.name)
+            print('PMHelper: ', day.PMHelper.name)
+            try:
+                print('PMDinners: ', day.PMDinners.name)
+            except AttributeError:
+                pass
+            for server in day.PMServers:
+                print('PMServer: ', server.name)
+        print('Positions not filled: ', day.positions_not_filled)
+        print('\n')
 
 
 Monday = Day('Monday')
@@ -143,5 +146,7 @@ AMServers = [Tammy, Sherie, Peggy, Jamie, Sara]
 PMServers = [Jamie, Rhiannon, Kara, Nathan, Sara]
 Dinners = [Alex, Rhiannon, Kara, Nathan, Johnny, Joe, Katie]
 
-set_schedule(Week)
-printout_test()
+#set_schedule(Week)
+Wednesday.set_kitchen()
+print(Wednesday.AMHelper.name)
+#printout_test()
