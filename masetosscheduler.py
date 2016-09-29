@@ -48,15 +48,18 @@ class Day:
             self.PMServers.append(self.set_position(PMServers))
 
     def set_kitchen(self):
-        for sandwichmaker in [self.AMSandwichMaker, self.PMSandwichMaker]:
-            if sandwichmaker is None:
-                sandwichmaker = self.set_position(SandwichMakers)
-        for griller in [self.AMGrill, self.PMGrill]:
-            if griller is None:
-                griller = self.set_position(Grillers)
-        for helper in [self.AMHelper, self.PMHelper]:
-            if helper is None:
-                helper = self.set_position(Helpers)
+        if self.AMSandwichMaker == None:
+            self.AMSandwichMaker = self.set_position(SandwichMakers)
+        if self.PMSandwichMaker == None:
+            self.PMSandwichMaker = self.set_position(SandwichMakers)
+        if self.AMGrill == None:
+            self.AMGrill = self.set_position(Grillers)
+        if self.PMGrill == None:
+            self.PMGrill = self.set_position(Grillers)
+        if self.AMHelper == None:
+            self.AMHelper = self.set_position(Helpers)
+        if self.PMHelper == None:
+            self.PMHelper = self.set_position(Helpers)
 
 
 class Person:
@@ -67,6 +70,7 @@ class Person:
 def set_schedule(week_list):
     for day in week_list:
         if day in [Monday, Tuesday]:
+            day.not_available(Joe)
             day.AMSandwichMaker = day.set_position_manually(Lisa)
             day.AMGrill = day.set_position_manually(Tim)
             day.AMHelper = day.set_position(Helpers)
@@ -146,7 +150,5 @@ AMServers = [Tammy, Sherie, Peggy, Jamie, Sara]
 PMServers = [Jamie, Rhiannon, Kara, Nathan, Sara]
 Dinners = [Alex, Rhiannon, Kara, Nathan, Johnny, Joe, Katie]
 
-#set_schedule(Week)
-Wednesday.set_kitchen()
-print(Wednesday.AMHelper.name)
-#printout_test()
+set_schedule(Week)
+printout_test()
