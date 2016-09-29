@@ -3,7 +3,6 @@ from random import choice
 
 
 class Day:
-    
     def __init__(self, name):
         self.name = name
         self.AMSandwichMaker = None
@@ -17,11 +16,12 @@ class Day:
         self.PMDinners = None
         self.BusyPersons = set()
         self.positions_not_filled = 0
-        
+
     def set_position_manually(self, person):
+        assert isinstance(person, Person), "%r is not a Person Object" % person
         self.BusyPersons.add(person)
         return person
-        
+
     def set_position(self, position_list):
         position_list = copy(position_list)
         for person in self.BusyPersons:
@@ -33,8 +33,8 @@ class Day:
             return chosen
         except IndexError:
             self.positions_not_filled += 1
-            return EMPTY 
-            
+            return EMPTY
+
     def set_servers(self, am_total, pm_total):
         am_total -= len(self.AMServers)  # subtract servers set manually.
         pm_total -= len(self.PMServers)
@@ -42,29 +42,24 @@ class Day:
             self.AMServers.append(self.set_position(AMServers))
         for server in range(pm_total):
             self.PMServers.append(self.set_position(PMServers))
-    
+
     def set_kitchen(self):
-        """This really sucks and there's probably a better way"""
-        if self.AMSandwichMaker is None:
-            self.AMSandwichMaker = self.set_position(SandwichMakers)
-        if self.PMSandwichMaker is None:
-            self.PMSandwichMaker = self.set_position(SandwichMakers)
-        if self.AMGrill is None:
-            self.AMGrill = self.set_position(Grillers)
-        if self.PMGrill is None:
-            self.PMGrill = self.set_position(Grillers)
-        if self.AMHelper is None:
-            self.AMHelper = self.set_position(Helpers)
-        if self.PMHelper is None:
-            self.PMHelper = self.set_position(Helpers)
- 
+        for sandwichmaker in [self.AMSandwichMaker, self.PMSandwichMaker]:
+            if sandwichmaker is None:
+                sandwichmaker = self.set_position(SandwichMakers)
+        for griller in [self.AMGrill, self.PMGrill]:
+            if griller is None:
+                griller = self.set_position(Grillers)
+        for helper in [self.AMHelper, self.PMHelper]:
+            if helper is None:
+                helper = self.set_position(Helpers)
+
 
 class Person:
-
     def __init__(self, name):
         self.name = name
 
-        
+
 def printout_test():
     for day in Week:
         print('--', day.name, ' Staff --')
@@ -115,7 +110,8 @@ def set_schedule(week_list):
         if day == Saturday:
             day.set_kitchen()
             day.set_servers(am_total=2, pm_total=2)
-        
+
+
 Monday = Day('Monday')
 Tuesday = Day('Tuesday')
 Wednesday = Day('Wednesday')
@@ -138,7 +134,7 @@ Nathan = Person('Nathan')
 Johnny = Person('Johnny')
 Joe = Person('Joe')
 Sara = Person('Sara')
-EMPTY = Person('-EMPTY-') 
+EMPTY = Person('-EMPTY-')
 
 SandwichMakers = [Katie, Rhiannon, Joe]
 Grillers = [Katie, Alex, Rhiannon, Nathan, Johnny, Joe]
