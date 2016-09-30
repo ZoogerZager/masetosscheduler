@@ -15,7 +15,7 @@ class Day:
         self.PMServers = []
         self.PMDinners = None
         self.BusyPersons = set()
-        self.positions_not_filled = 0
+        self.empty_positions = 0
 
     def not_available(self, person):
         assert isinstance(person, Person), "%r is not a Person Object" % person
@@ -39,7 +39,7 @@ class Day:
             self.BusyPersons.add(chosen)
             return chosen
         except IndexError:
-            self.positions_not_filled += 1
+            self.empty_positions += 1
             return EMPTY
 
     def set_servers(self, am_total, pm_total):
@@ -71,47 +71,48 @@ class Person:
         assert isinstance(positions, list), "%r is not a list" % positions
         self.positions = positions
 
-
 def set_schedule(week_list):
+    total_empty_positions = 0
     for day in week_list:
-        if day in [Monday, Tuesday]:
-            day.not_available(Joe)
+        if day.name in ['Monday', 'Tuesday']:
             day.AMSandwichMaker = day.set_position_manually(Lisa)
             day.AMGrill = day.set_position_manually(Tim)
             day.AMHelper = day.set_position(Helpers)
             day.set_servers(am_total=2, pm_total=0)
-        if day is Wednesday:
+        if day.name is 'Wednesday':
             day.AMSandwichMaker = day.set_position_manually(Lisa)
             day.AMGrill = day.set_position_manually(Tim)
             day.AMServers.append(day.set_position_manually(Sherie))
             day.set_kitchen()
             day.set_servers(am_total=2, pm_total=2)
-        if day is Thursday:
+        if day.name is 'Thursday':
             day.AMSandwichMaker = day.set_position_manually(Lisa)
             day.AMGrill = day.set_position_manually(Tim)
             day.set_kitchen()
             day.set_servers(am_total=2, pm_total=2)
-        if day is Friday:
+        if day.name is 'Friday':
             day.AMSandwichMaker = day.set_position_manually(Lisa)
             day.AMGrill = day.set_position_manually(Tim)
             day.AMServers.append(day.set_position_manually(Sherie))
             day.set_kitchen()
             day.set_servers(am_total=3, pm_total=3)
             day.PMDinners = day.set_position(Dinners)
-        if day is Saturday:
+        if day.name is 'Saturday':
             day.set_kitchen()
             day.set_servers(am_total=2, pm_total=2)
+        total_empty_positions += day.empty_positions
+    return total_empty_positions
 
 
-def printout_test():
-    for day in Week:
+def printout_test(week_list):
+    for day in week_list:
         print('--', day.name, ' Staff --')
         print('AMSandwichMaker: ', day.AMSandwichMaker.name)
         print('AMGrill: ', day.AMGrill.name)
         print('AMHelper: ', day.AMHelper.name)
         for server in day.AMServers:
             print('AMServer: ', server.name)
-        if day in [Wednesday, Thursday, Friday, Saturday]:
+        if day.name in ['Wednesday', 'Thursday', 'Friday', 'Saturday']:
             print('PMSandwichMaker: ', day.PMSandwichMaker.name)
             print('PMGrill: ', day.PMGrill.name)
             print('PMHelper: ', day.PMHelper.name)
@@ -121,17 +122,19 @@ def printout_test():
                 pass
             for server in day.PMServers:
                 print('PMServer: ', server.name)
-        print('Positions not filled: ', day.positions_not_filled)
+        print('Empty Positions: ', day.empty_positions)
         print('\n')
 
 
-Monday = Day('Monday')
-Tuesday = Day('Tuesday')
-Wednesday = Day('Wednesday')
-Thursday = Day('Thursday')
-Friday = Day('Friday')
-Saturday = Day('Saturday')
-Week = [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday]
+def initialize_week():
+    Monday = Day('Monday')
+    Tuesday = Day('Tuesday')
+    Wednesday = Day('Wednesday')
+    Thursday = Day('Thursday')
+    Friday = Day('Friday')
+    Saturday = Day('Saturday')
+    Week = [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday]
+    return Week
 
 Tammy = Person('Tammy', ['AMServer'])
 Lisa = Person('Lisa', ['SandwichMaker'] )
@@ -158,5 +161,9 @@ AMServers = [person for person in People if 'AMServer' in person.positions]
 PMServers = [person for person in People if 'PMServer' in person.positions]
 Dinners = [person for person in People if 'Dinners' in person.positions]
 
-set_schedule(Week)
-printout_test()
+Week = initialize_week()
+# If the number empty positions > 0. Reset Days and Try Again.
+while set_schedule(Week) > 0:  # Super Hackish. 
+    Week = initialize_week()
+    set_schedule(Week)
+printout_test(Week)
