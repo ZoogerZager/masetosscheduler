@@ -52,24 +52,26 @@ class Day:
 
     def set_kitchen(self):
         if self.AMSandwichMaker is None:
-            self.AMSandwichMaker = self.set_position(SandwichMakers)
+            self.AMSandwichMaker = self.set_position(AMSandwichMakers)
         if self.PMSandwichMaker is None:
-            self.PMSandwichMaker = self.set_position(SandwichMakers)
+            self.PMSandwichMaker = self.set_position(PMSandwichMakers)
         if self.AMGrill is None:
-            self.AMGrill = self.set_position(Grillers)
+            self.AMGrill = self.set_position(AMGrillers)
         if self.PMGrill is None:
-            self.PMGrill = self.set_position(Grillers)
+            self.PMGrill = self.set_position(PMGrillers)
         if self.AMHelper is None:
-            self.AMHelper = self.set_position(Helpers)
+            self.AMHelper = self.set_position(AMHelpers)
         if self.PMHelper is None:
-            self.PMHelper = self.set_position(Helpers)
+            self.PMHelper = self.set_position(PMHelpers)
 
 
 class Person:
-    def __init__(self, name, positions):
-        self.name = name
+    def __init__(self, name, positions, availability):
         assert isinstance(positions, list), "%r is not a list" % positions
+        assert isinstance(availability, list), "%r is not a list" % availability
+        self.name = name
         self.positions = positions
+        self.availability = availability
 
 def set_schedule(week_list):
     total_empty_positions = 0
@@ -77,7 +79,7 @@ def set_schedule(week_list):
         if day.name in ['Monday', 'Tuesday']:
             day.AMSandwichMaker = day.set_position_manually(Lisa)
             day.AMGrill = day.set_position_manually(Tim)
-            day.AMHelper = day.set_position(Helpers)
+            day.AMHelper = day.set_position(AMHelpers)
             day.set_servers(am_total=2, pm_total=0)
         if day.name is 'Wednesday':
             day.AMSandwichMaker = day.set_position_manually(Lisa)
@@ -139,30 +141,37 @@ def initialize_week():
     Week = [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday]
     return Week
 
-Tammy = Person('Tammy', ['AMServer'])
-Lisa = Person('Lisa', ['SandwichMaker'] )
-Sherie = Person('Sherie', ['AMServer'])
-Tim = Person('Tim', ['Griller'])
-Peggy = Person('Peggy', ['AMServer'])
-Katie = Person('Katie', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'])
-Alex = Person('Alex', ['Griller', 'Helper', 'Dinners'])
-Jamie = Person('Jamie', ['AMServer', 'PMServer'])
-Rhiannon = Person('Rhiannon', ['SandwichMaker', 'Griller', 'Helper', 'PMServer', 'Dinners'])
-Kara = Person('Kara', ['Helper', 'PMServer', 'Dinners'])
-Nathan = Person('Nathan', ['Griller', 'Helper', 'PMServer', 'Dinners'])
-Johnny = Person('Johnny', ['Griller', 'Helper'])
-Joe = Person('Joe', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'])
-Sara = Person('Sara', ['AMServer', 'PMServer'])
-EMPTY = Person('-EMPTY-', [])
+Tammy = Person('Tammy', ['Server'], ['AM'])
+Lisa = Person('Lisa', ['SandwichMaker'], ['AM'])
+Sherie = Person('Sherie', ['Server'], ['AM'])
+Tim = Person('Tim', ['Griller'], ['AM'])
+Peggy = Person('Peggy', ['Server'], ['AM'])
+Katie = Person('Katie', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'],
+                        ['AM', 'PM'])
+Alex = Person('Alex', ['Griller', 'Helper', 'Dinners'], ['AM', 'PM'])
+Jamie = Person('Jamie', ['Server'], ['AM', 'PM'])
+Rhiannon = Person('Rhiannon', ['SandwichMaker', 'Griller', 'Helper', 'Server',
+                               'Dinners'], ['AM','PM'])
+Kara = Person('Kara', ['Helper', 'Server', 'Dinners'], ['AM', 'PM'])
+Nathan = Person('Nathan', ['Griller', 'Helper', 'Server', 'Dinners'], ['PM'])
+Johnny = Person('Johnny', ['Griller', 'Helper'], ['PM'])
+Joe = Person('Joe', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'],
+                    ['AM', 'PM'])
+Sara = Person('Sara', ['Server'], ['AM', 'PM'])
+EMPTY = Person('-EMPTY-', [], [])
 
 People = [Tammy, Lisa, Sherie, Tim, Peggy, Katie, Alex, Jamie, Rhiannon, Kara,
           Nathan, Johnny, Joe, Sara]
-SandwichMakers = [person for person in People if 'SandwichMaker' in person.positions]
-Grillers = [person for person in People if 'Griller' in person.positions]
-Helpers = [person for person in People if 'Helper' in person.positions]
-AMServers = [person for person in People if 'AMServer' in person.positions]
-PMServers = [person for person in People if 'PMServer' in person.positions]
-Dinners = [person for person in People if 'Dinners' in person.positions]
+
+AMSandwichMakers = [p for p in People if 'SandwichMaker' in p.positions and 'AM' in p.availability]
+PMSandwichMakers = [p for p in People if 'SandwichMaker' in p.positions and 'PM' in p.availability]
+AMGrillers = [p for p in People if 'Griller' in p.positions and 'AM' in p.availability]
+PMGrillers = [p for p in People if 'Griller' in p.positions and 'PM' in p.availability]
+AMHelpers = [p for p in People if 'Helper' in p.positions and 'AM' in p.availability]
+PMHelpers = [p for p in People if 'Helper' in p.positions and 'PM' in p.availability]
+AMServers = [p for p in People if 'Server' in p.positions and 'AM' in p.availability]
+PMServers = [p for p in People if 'Server' in p.positions and 'PM' in p.availability]
+Dinners = [p for p in People if 'Dinners' in p.positions]
 
 
 week = initialize_week()
