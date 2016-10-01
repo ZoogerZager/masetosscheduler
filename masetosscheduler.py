@@ -101,7 +101,10 @@ def set_schedule(week_list):
             day.set_kitchen()
             day.set_servers(am_total=2, pm_total=2)
         total_empty_positions += day.empty_positions
-    return total_empty_positions
+    if total_empty_positions == 0:  # Succesful
+        return True
+    if total_empty_positions > 0:  # Unsuccesful
+        return False
 
 
 def printout_test(week_list):
@@ -161,9 +164,10 @@ AMServers = [person for person in People if 'AMServer' in person.positions]
 PMServers = [person for person in People if 'PMServer' in person.positions]
 Dinners = [person for person in People if 'Dinners' in person.positions]
 
-Week = initialize_week()
-# If the number empty positions > 0. Reset Days and Try Again.
-while set_schedule(Week) > 0:  # Super Hackish. 
-    Week = initialize_week()
-    set_schedule(Week)
-printout_test(Week)
+
+week = initialize_week()
+schedule_completed = set_schedule(week)
+while not schedule_completed:
+    week = initialize_week()
+    schedule_completed = set_schedule(week)
+printout_test(week)
