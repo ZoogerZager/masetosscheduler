@@ -14,9 +14,17 @@ class Day:
         self.PMHelper = None
         self.PMServers = []
         self.PMDinners = None
-        self.BusyPersons = set()
+		self.AMBusyPersons = set()
+        self.PMBusyPersons = set()
         self.empty_positions = 0
 
+	def build_availability(self, person_list):
+		for person in person_list:
+			if person.not_available['AM'] == self.name or person.not_available['AM'] == 'All':
+				self.AMBusyPersons.add(person)
+			if person.not_available['PM'] == self.name or person.not_available['PM'] == 'All':
+				self.PMBusyPersons.add(person)
+				
     def not_available(self, person):
         assert isinstance(person, Person), "%r is not a Person Object" % person
         self.BusyPersons.add(person)
@@ -66,12 +74,12 @@ class Day:
 
 
 class Person:
-    def __init__(self, name, positions, availability):
+    def __init__(self, name, positions, not_available):
         assert isinstance(positions, list), "%r is not a list" % positions
-        assert isinstance(availability, list), "%r is not a list" % availability
+        assert isinstance(availability, dict), "%r is not a dict" % availability
         self.name = name
         self.positions = positions
-        self.availability = availability
+        self.not_available = not_available
 
 def set_schedule(week_list):
     total_empty_positions = 0
@@ -141,28 +149,29 @@ def initialize_week():
     Week = [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday]
     return Week
 
-Tammy = Person('Tammy', ['Server'], ['AM'])
-Lisa = Person('Lisa', ['SandwichMaker'], ['AM'])
-Sherie = Person('Sherie', ['Server'], ['AM'])
-Tim = Person('Tim', ['Griller'], ['AM'])
-Peggy = Person('Peggy', ['Server'], ['AM'])
+Tammy = Person('Tammy', ['Server'], {'PM': 'All'})
+Lisa = Person('Lisa', ['SandwichMaker'], {'AM': 'Saturday', 'PM': 'All'})
+Sherie = Person('Sherie', ['Server'], {'PM': 'All'})
+Tim = Person('Tim', ['Griller'], {'AM': 'Saturday','PM': 'All'})
+Peggy = Person('Peggy', ['Server'], ['PM': 'All'])
 Katie = Person('Katie', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'],
-                        ['AM', 'PM'])
-Alex = Person('Alex', ['Griller', 'Helper', 'Dinners'], ['AM', 'PM'])
-Jamie = Person('Jamie', ['Server'], ['AM', 'PM'])
+                        {})
+Alex = Person('Alex', ['Griller', 'Helper', 'Dinners'], {})
+Jamie = Person('Jamie', ['Server'], {})
 Rhiannon = Person('Rhiannon', ['SandwichMaker', 'Griller', 'Helper', 'Server',
-                               'Dinners'], ['AM','PM'])
-Kara = Person('Kara', ['Helper', 'Server', 'Dinners'], ['AM', 'PM'])
-Nathan = Person('Nathan', ['Griller', 'Helper', 'Server', 'Dinners'], ['PM'])
-Johnny = Person('Johnny', ['Griller', 'Helper'], ['PM'])
+                               'Dinners'], {})
+Kara = Person('Kara', ['Helper', 'Server', 'Dinners'], {})
+Nathan = Person('Nathan', ['Griller', 'Helper', 'Server', 'Dinners'], {'AM': 'All'})
+Johnny = Person('Johnny', ['Griller', 'Helper'], {'AM': 'All'})
 Joe = Person('Joe', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'],
-                    ['AM', 'PM'])
-Sara = Person('Sara', ['Server'], ['AM', 'PM'])
-EMPTY = Person('-EMPTY-', [], [])
+                    {})
+Sara = Person('Sara', ['Server'], {})
+EMPTY = Person('-EMPTY-', [], {})
 
 People = [Tammy, Lisa, Sherie, Tim, Peggy, Katie, Alex, Jamie, Rhiannon, Kara,
           Nathan, Johnny, Joe, Sara]
 
+#TODO This all needs reworked for the new not_available attribute
 AMSandwichMakers = [p for p in People if 'SandwichMaker' in p.positions and 'AM' in p.availability]
 PMSandwichMakers = [p for p in People if 'SandwichMaker' in p.positions and 'PM' in p.availability]
 AMGrillers = [p for p in People if 'Griller' in p.positions and 'AM' in p.availability]
