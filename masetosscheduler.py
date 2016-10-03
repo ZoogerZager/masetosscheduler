@@ -14,29 +14,38 @@ class Day:
         self.PMHelper = None
         self.PMServers = []
         self.PMDinners = None
-		self.AMBusyPersons = set()
+        self.AMBusyPersons = set()
         self.PMBusyPersons = set()
         self.empty_positions = 0
 
-	def build_availability(self, person_list):
-		for person in person_list:
-			if person.not_available['AM'] == self.name or person.not_available['AM'] == 'All':
-				self.AMBusyPersons.add(person)
-			if person.not_available['PM'] == self.name or person.not_available['PM'] == 'All':
-				self.PMBusyPersons.add(person)
-				
+    def build_availability(self, person_list):
+        for person in person_list:
+            if person.not_available['AM'] == self.name:
+                self.AMBusyPersons.add(person)
+            if person.not_available['AM'] == 'All':
+                self.AMBusyPersons.add(person)
+            if person.not_available['PM'] == self.name:
+                self.PMBusyPersons.add(person)
+            if person.not_available['PM'] == 'All':
+                self.PMBusyPersons.add(person)
+
     def not_available(self, person):
         assert isinstance(person, Person), "%r is not a Person Object" % person
-        self.BusyPersons.add(person)
+        self.AMBusyPersons.add(person)
+        self.PMBusyPersons.add(person)
 
     def set_position_manually(self, person):
         assert isinstance(person, Person), "%r is not a Person Object" % person
-        self.BusyPersons.add(person)
+        self.AMBusyPersons.add(person)
+        self.PMBusyPersons.add(person)
         return person
 
     def get_free_employees(self, position_list):
         position_list = copy(position_list)
-        for person in self.BusyPersons:
+        for person in self.AMBusyPersons:
+            if person in position_list:
+                position_list.remove(person)
+        for person in self.PMBusyPersons:
             if person in position_list:
                 position_list.remove(person)
         return position_list
@@ -44,7 +53,8 @@ class Day:
     def set_position(self, position_list):
         try:
             chosen = choice(self.get_free_employees(position_list))
-            self.BusyPersons.add(chosen)
+            self.AMBusyPersons.add(chosen)
+            self.PMBusyPersons.add(chosen)
             return chosen
         except IndexError:
             self.empty_positions += 1
@@ -54,29 +64,29 @@ class Day:
         am_total -= len(self.AMServers)  # subtract servers set manually.
         pm_total -= len(self.PMServers)
         for server in range(am_total):
-            self.AMServers.append(self.set_position(AMServers))
+            self.AMServers.append(self.set_position(Servers))
         for server in range(pm_total):
-            self.PMServers.append(self.set_position(PMServers))
+            self.PMServers.append(self.set_position(Servers))
 
     def set_kitchen(self):
         if self.AMSandwichMaker is None:
-            self.AMSandwichMaker = self.set_position(AMSandwichMakers)
+            self.AMSandwichMaker = self.set_position(SandwichMakers)
         if self.PMSandwichMaker is None:
-            self.PMSandwichMaker = self.set_position(PMSandwichMakers)
+            self.PMSandwichMaker = self.set_position(SandwichMakers)
         if self.AMGrill is None:
-            self.AMGrill = self.set_position(AMGrillers)
+            self.AMGrill = self.set_position(Grillers)
         if self.PMGrill is None:
-            self.PMGrill = self.set_position(PMGrillers)
+            self.PMGrill = self.set_position(Grillers)
         if self.AMHelper is None:
-            self.AMHelper = self.set_position(AMHelpers)
+            self.AMHelper = self.set_position(Helpers)
         if self.PMHelper is None:
-            self.PMHelper = self.set_position(PMHelpers)
+            self.PMHelper = self.set_position(Helpers)
 
 
 class Person:
     def __init__(self, name, positions, not_available):
         assert isinstance(positions, list), "%r is not a list" % positions
-        assert isinstance(availability, dict), "%r is not a dict" % availability
+        assert isinstance(not_available, dict), "%r is not a dict" % availability
         self.name = name
         self.positions = positions
         self.not_available = not_available
@@ -84,10 +94,11 @@ class Person:
 def set_schedule(week_list):
     total_empty_positions = 0
     for day in week_list:
+        day.build_availability(People)
         if day.name in ['Monday', 'Tuesday']:
             day.AMSandwichMaker = day.set_position_manually(Lisa)
             day.AMGrill = day.set_position_manually(Tim)
-            day.AMHelper = day.set_position(AMHelpers)
+            day.AMHelper = day.set_position(Helpers)
             day.set_servers(am_total=2, pm_total=0)
         if day.name is 'Wednesday':
             day.AMSandwichMaker = day.set_position_manually(Lisa)
@@ -111,9 +122,9 @@ def set_schedule(week_list):
             day.set_kitchen()
             day.set_servers(am_total=2, pm_total=2)
         total_empty_positions += day.empty_positions
-    if total_empty_positions == 0:  # Succesful
+    if total_empty_positions == 0:  # Successful
         return True
-    if total_empty_positions > 0:  # Unsuccesful
+    if total_empty_positions > 0:  # Unsuccessful
         return False
 
 
@@ -149,39 +160,34 @@ def initialize_week():
     Week = [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday]
     return Week
 
-Tammy = Person('Tammy', ['Server'], {'PM': 'All'})
+Tammy = Person('Tammy', ['Server'], {'AM': None, 'PM': 'All'})
 Lisa = Person('Lisa', ['SandwichMaker'], {'AM': 'Saturday', 'PM': 'All'})
-Sherie = Person('Sherie', ['Server'], {'PM': 'All'})
+Sherie = Person('Sherie', ['Server'], {'AM': None, 'PM': 'All'})
 Tim = Person('Tim', ['Griller'], {'AM': 'Saturday','PM': 'All'})
-Peggy = Person('Peggy', ['Server'], ['PM': 'All'])
+Peggy = Person('Peggy', ['Server'], {'AM': None, 'PM': 'All'})
 Katie = Person('Katie', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'],
-                        {})
-Alex = Person('Alex', ['Griller', 'Helper', 'Dinners'], {})
-Jamie = Person('Jamie', ['Server'], {})
+                        {'AM': None, 'PM': None})
+Alex = Person('Alex', ['Griller', 'Helper', 'Dinners'], {'AM': None, 'PM': None})
+Jamie = Person('Jamie', ['Server'], {'AM': None, 'PM': None})
 Rhiannon = Person('Rhiannon', ['SandwichMaker', 'Griller', 'Helper', 'Server',
-                               'Dinners'], {})
-Kara = Person('Kara', ['Helper', 'Server', 'Dinners'], {})
-Nathan = Person('Nathan', ['Griller', 'Helper', 'Server', 'Dinners'], {'AM': 'All'})
-Johnny = Person('Johnny', ['Griller', 'Helper'], {'AM': 'All'})
+                               'Dinners'], {'AM': None, 'PM': None})
+Kara = Person('Kara', ['Helper', 'Server', 'Dinners'], {'AM': None, 'PM': None})
+Nathan = Person('Nathan', ['Griller', 'Helper', 'Server', 'Dinners'],
+                          {'AM': 'All', 'PM': None})
+Johnny = Person('Johnny', ['Griller', 'Helper'], {'AM': 'All', 'PM': None})
 Joe = Person('Joe', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'],
-                    {})
-Sara = Person('Sara', ['Server'], {})
-EMPTY = Person('-EMPTY-', [], {})
+                    {'AM': None, 'PM': None})
+Sara = Person('Sara', ['Server'], {'AM': None, 'PM': None})
+EMPTY = Person('-EMPTY-', [], {'AM': 'All', 'PM': 'All'})
 
 People = [Tammy, Lisa, Sherie, Tim, Peggy, Katie, Alex, Jamie, Rhiannon, Kara,
           Nathan, Johnny, Joe, Sara]
 
-#TODO This all needs reworked for the new not_available attribute
-AMSandwichMakers = [p for p in People if 'SandwichMaker' in p.positions and 'AM' in p.availability]
-PMSandwichMakers = [p for p in People if 'SandwichMaker' in p.positions and 'PM' in p.availability]
-AMGrillers = [p for p in People if 'Griller' in p.positions and 'AM' in p.availability]
-PMGrillers = [p for p in People if 'Griller' in p.positions and 'PM' in p.availability]
-AMHelpers = [p for p in People if 'Helper' in p.positions and 'AM' in p.availability]
-PMHelpers = [p for p in People if 'Helper' in p.positions and 'PM' in p.availability]
-AMServers = [p for p in People if 'Server' in p.positions and 'AM' in p.availability]
-PMServers = [p for p in People if 'Server' in p.positions and 'PM' in p.availability]
+SandwichMakers = [p for p in People if 'SandwichMaker' in p.positions]
+Grillers = [p for p in People if 'Griller' in p.positions]
+Helpers = [p for p in People if 'Helper' in p.positions]
+Servers = [p for p in People if 'Server' in p.positions]
 Dinners = [p for p in People if 'Dinners' in p.positions]
-
 
 week = initialize_week()
 schedule_completed = set_schedule(week)
