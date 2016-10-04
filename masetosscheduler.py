@@ -40,6 +40,7 @@ class Day:
         self.PMBusyPersons.add(person)
         return person
 
+#TODO  This Function needs to handle AM-PM Stuff Ultimately
     def get_free_employees(self, position_list):
         position_list = copy(position_list)
         for person in self.AMBusyPersons:
@@ -86,10 +87,11 @@ class Day:
 class Person:
     def __init__(self, name, positions, not_available):
         assert isinstance(positions, list), "%r is not a list" % positions
-        assert isinstance(not_available, dict), "%r is not a dict" % availability
+        assert isinstance(not_available, dict), "%r is not a dict" % not_available
         self.name = name
         self.positions = positions
         self.not_available = not_available
+
 
 def set_schedule(week_list):
     total_empty_positions = 0
@@ -151,14 +153,25 @@ def printout_test(week_list):
 
 
 def initialize_week():
-    Monday = Day('Monday')
-    Tuesday = Day('Tuesday')
-    Wednesday = Day('Wednesday')
-    Thursday = Day('Thursday')
-    Friday = Day('Friday')
-    Saturday = Day('Saturday')
-    Week = [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday]
+    Week = []
+    for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']:
+        current_day = Day(day)
+        Week.append(current_day)
     return Week
+
+def run_once_and_print():
+    week = initialize_week()
+    set_schedule(week)
+    printout_test(week)
+
+def run_till_completed():
+    week = initialize_week()
+    schedule_completed = set_schedule(week)
+    while not schedule_completed:
+        week = initialize_week()
+        schedule_completed = set_schedule(week)
+    printout_test(week)
+
 
 Tammy = Person('Tammy', ['Server'], {'AM': None, 'PM': 'All'})
 Lisa = Person('Lisa', ['SandwichMaker'], {'AM': 'Saturday', 'PM': 'All'})
@@ -189,9 +202,4 @@ Helpers = [p for p in People if 'Helper' in p.positions]
 Servers = [p for p in People if 'Server' in p.positions]
 Dinners = [p for p in People if 'Dinners' in p.positions]
 
-week = initialize_week()
-schedule_completed = set_schedule(week)
-while not schedule_completed:
-    week = initialize_week()
-    schedule_completed = set_schedule(week)
-printout_test(week)
+run_once_and_print()
