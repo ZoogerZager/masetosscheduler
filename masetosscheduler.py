@@ -40,14 +40,14 @@ class Day:
         self.PMBusyPersons.add(person)
         return person
 
-    def get_free_AM_employees(self, position_list):    # Hackish
+    def get_free_am_employees(self, position_list):    # Hackish
         position_list = copy(position_list)
         for person in self.AMBusyPersons:
             if person in position_list:
                 position_list.remove(person)
         return position_list
 
-    def get_free_PM_employees(self, position_list):
+    def get_free_pm_employees(self, position_list):
         position_list = copy(position_list)
         for person in self.PMBusyPersons:
             if person in position_list:
@@ -55,10 +55,10 @@ class Day:
         return position_list
 
     def set_position(self, position_list, shift):
-        assert shift in ['AM', 'PM'], '%r shift should be "AM" or "PM"' % r
+        assert shift in ['AM', 'PM'], '%r shift should be "AM" or "PM"' % shift
         if shift is 'AM':
             try:
-                chosen = choice(self.get_free_AM_employees(position_list))
+                chosen = choice(self.get_free_am_employees(position_list))
                 self.AMBusyPersons.add(chosen)
                 self.PMBusyPersons.add(chosen)
                 return chosen
@@ -67,14 +67,13 @@ class Day:
                 return EMPTY
         if shift is 'PM':
             try:
-                chosen = choice(self.get_free_PM_employees(position_list))
+                chosen = choice(self.get_free_pm_employees(position_list))
                 self.AMBusyPersons.add(chosen)
                 self.PMBusyPersons.add(chosen)
                 return chosen
             except IndexError:
                 self.empty_positions += 1
                 return EMPTY
-
 
     def set_servers(self, am_total, pm_total):
         am_total -= len(self.AMServers)  # subtract servers set manually.
@@ -168,16 +167,18 @@ def printout_test(week_list):
 
 
 def initialize_week():
-    Week = []
+    week = []
     for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']:
         current_day = Day(day)
-        Week.append(current_day)
-    return Week
+        week.append(current_day)
+    return week
+
 
 def run_once_and_print():
     week = initialize_week()
     set_schedule(week)
     printout_test(week)
+
 
 def run_till_completed():
     week = initialize_week()
@@ -187,26 +188,22 @@ def run_till_completed():
         schedule_completed = set_schedule(week)
     printout_test(week)
 
-
-Tammy = Person('Tammy', ['Server'], {'AM': None, 'PM': 'All'})
-Lisa = Person('Lisa', ['SandwichMaker'], {'AM': 'Saturday', 'PM': 'All'})
-Sherie = Person('Sherie', ['Server'], {'AM': None, 'PM': 'All'})
-Tim = Person('Tim', ['Griller'], {'AM': 'Saturday','PM': 'All'})
+#TODO The Availability Dicts should have lists as values
+Tammy = Person('Tammy', ['Server'], dict(AM=None, PM='All'))
+Lisa = Person('Lisa', ['SandwichMaker'], dict(AM='Saturday', PM='All'))
+Sherie = Person('Sherie', ['Server'], dict(AM=None, PM='All'))
+Tim = Person('Tim', ['Griller'], dict(AM='Saturday', PM='All'))
 Peggy = Person('Peggy', ['Server'], {'AM': None, 'PM': 'All'})
-Katie = Person('Katie', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'],
-                        {'AM': None, 'PM': None})
-Alex = Person('Alex', ['Griller', 'Helper', 'Dinners'], {'AM': None, 'PM': None})
-Jamie = Person('Jamie', ['Server'], {'AM': None, 'PM': None})
-Rhiannon = Person('Rhiannon', ['SandwichMaker', 'Griller', 'Helper', 'Server',
-                               'Dinners'], {'AM': None, 'PM': None})
-Kara = Person('Kara', ['Helper', 'Server', 'Dinners'], {'AM': None, 'PM': None})
-Nathan = Person('Nathan', ['Griller', 'Helper', 'Server', 'Dinners'],
-                          {'AM': 'All', 'PM': None})
-Johnny = Person('Johnny', ['Griller', 'Helper'], {'AM': 'All', 'PM': None})
-Joe = Person('Joe', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'],
-                    {'AM': None, 'PM': None})
-Sara = Person('Sara', ['Server'], {'AM': None, 'PM': None})
-EMPTY = Person('-EMPTY-', [], {'AM': 'All', 'PM': 'All'})
+Katie = Person('Katie', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'], dict(AM=None, PM=None))
+Alex = Person('Alex', ['Griller', 'Helper', 'Dinners'], dict(AM=None, PM=None))
+Jamie = Person('Jamie', ['Server'], dict(AM=None, PM=None))
+Rhiannon = Person('Rhiannon', ['SandwichMaker', 'Griller', 'Helper', 'Server', 'Dinners'], dict(AM=None, PM=None))
+Kara = Person('Kara', ['Helper', 'Server', 'Dinners'], dict(AM=None, PM=None))
+Nathan = Person('Nathan', ['Griller', 'Helper', 'Server', 'Dinners'], dict(AM='All', PM=None))
+Johnny = Person('Johnny', ['Griller', 'Helper'], dict(AM='All', PM=None))
+Joe = Person('Joe', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'], dict(AM=None, PM=None))
+Sara = Person('Sara', ['Server'], dict(AM=None, PM=None))
+EMPTY = Person('-EMPTY-', [], dict(AM='All', PM='All'))
 
 People = [Tammy, Lisa, Sherie, Tim, Peggy, Katie, Alex, Jamie, Rhiannon, Kara,
           Nathan, Johnny, Joe, Sara]
