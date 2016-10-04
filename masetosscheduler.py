@@ -40,48 +40,63 @@ class Day:
         self.PMBusyPersons.add(person)
         return person
 
-#TODO  This Function needs to handle AM-PM Stuff Ultimately
-    def get_free_employees(self, position_list):
+    def get_free_AM_employees(self, position_list):    # Hackish
         position_list = copy(position_list)
         for person in self.AMBusyPersons:
             if person in position_list:
                 position_list.remove(person)
+        return position_list
+
+    def get_free_PM_employees(self, position_list):
+        position_list = copy(position_list)
         for person in self.PMBusyPersons:
             if person in position_list:
                 position_list.remove(person)
         return position_list
 
-    def set_position(self, position_list):
-        try:
-            chosen = choice(self.get_free_employees(position_list))
-            self.AMBusyPersons.add(chosen)
-            self.PMBusyPersons.add(chosen)
-            return chosen
-        except IndexError:
-            self.empty_positions += 1
-            return EMPTY
+    def set_position(self, position_list, shift):
+        assert shift in ['AM', 'PM'], '%r shift should be "AM" or "PM"' % r
+        if shift is 'AM':
+            try:
+                chosen = choice(self.get_free_AM_employees(position_list))
+                self.AMBusyPersons.add(chosen)
+                self.PMBusyPersons.add(chosen)
+                return chosen
+            except IndexError:
+                self.empty_positions += 1
+                return EMPTY
+        if shift is 'PM':
+            try:
+                chosen = choice(self.get_free_PM_employees(position_list))
+                self.AMBusyPersons.add(chosen)
+                self.PMBusyPersons.add(chosen)
+                return chosen
+            except IndexError:
+                self.empty_positions += 1
+                return EMPTY
+
 
     def set_servers(self, am_total, pm_total):
         am_total -= len(self.AMServers)  # subtract servers set manually.
         pm_total -= len(self.PMServers)
         for server in range(am_total):
-            self.AMServers.append(self.set_position(Servers))
+            self.AMServers.append(self.set_position(Servers, 'AM'))
         for server in range(pm_total):
-            self.PMServers.append(self.set_position(Servers))
+            self.PMServers.append(self.set_position(Servers, 'PM'))
 
     def set_kitchen(self):
         if self.AMSandwichMaker is None:
-            self.AMSandwichMaker = self.set_position(SandwichMakers)
+            self.AMSandwichMaker = self.set_position(SandwichMakers, 'AM')
         if self.PMSandwichMaker is None:
-            self.PMSandwichMaker = self.set_position(SandwichMakers)
+            self.PMSandwichMaker = self.set_position(SandwichMakers, 'PM')
         if self.AMGrill is None:
-            self.AMGrill = self.set_position(Grillers)
+            self.AMGrill = self.set_position(Grillers, 'AM')
         if self.PMGrill is None:
-            self.PMGrill = self.set_position(Grillers)
+            self.PMGrill = self.set_position(Grillers, 'PM')
         if self.AMHelper is None:
-            self.AMHelper = self.set_position(Helpers)
+            self.AMHelper = self.set_position(Helpers, 'AM')
         if self.PMHelper is None:
-            self.PMHelper = self.set_position(Helpers)
+            self.PMHelper = self.set_position(Helpers, 'PM')
 
 
 class Person:
@@ -100,7 +115,7 @@ def set_schedule(week_list):
         if day.name in ['Monday', 'Tuesday']:
             day.AMSandwichMaker = day.set_position_manually(Lisa)
             day.AMGrill = day.set_position_manually(Tim)
-            day.AMHelper = day.set_position(Helpers)
+            day.AMHelper = day.set_position(Helpers, 'AM')
             day.set_servers(am_total=2, pm_total=0)
         if day.name is 'Wednesday':
             day.AMSandwichMaker = day.set_position_manually(Lisa)
@@ -119,7 +134,7 @@ def set_schedule(week_list):
             day.AMServers.append(day.set_position_manually(Sherie))
             day.set_kitchen()
             day.set_servers(am_total=3, pm_total=3)
-            day.PMDinners = day.set_position(Dinners)
+            day.PMDinners = day.set_position(Dinners, 'PM')
         if day.name is 'Saturday':
             day.set_kitchen()
             day.set_servers(am_total=2, pm_total=2)
@@ -202,4 +217,5 @@ Helpers = [p for p in People if 'Helper' in p.positions]
 Servers = [p for p in People if 'Server' in p.positions]
 Dinners = [p for p in People if 'Dinners' in p.positions]
 
-run_once_and_print()
+# run_once_and_print()
+run_till_completed()
