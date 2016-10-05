@@ -1,4 +1,3 @@
-from copy import copy
 from random import choice
 
 
@@ -103,7 +102,6 @@ class Day:
         print('\n')
 
 
-
 class Monday(Day):
     def setup(self):
         self.set_availability(People)
@@ -151,7 +149,6 @@ class Friday(Day):
         self.set_kitchen()
         self.set_servers(am_total=3, pm_total=3)
         self.PMDinners = self.set_position(Dinners, 'PM')
-        return self.empty_positions
 
 
 class Saturday(Day):
@@ -171,85 +168,37 @@ class Person:
 
 
 def set_schedule(week_list):
-    total_empty_positions = 0
     for day in week_list:
-        day.set_availability(People)
-        if day.name in ['Monday', 'Tuesday']:
-            day.AMSandwichMaker = day.set_position_manually(Lisa)
-            day.AMGrill = day.set_position_manually(Tim)
-            day.AMHelper = day.set_position(Helpers, 'AM')
-            day.set_servers(am_total=2, pm_total=0)
-        if day.name is 'Wednesday':
-            day.AMSandwichMaker = day.set_position_manually(Lisa)
-            day.AMGrill = day.set_position_manually(Tim)
-            day.AMServers.append(day.set_position_manually(Sherie))
-            day.set_kitchen()
-            day.set_servers(am_total=2, pm_total=2)
-        if day.name is 'Thursday':
-            day.AMSandwichMaker = day.set_position_manually(Lisa)
-            day.AMGrill = day.set_position_manually(Tim)
-            day.set_kitchen()
-            day.set_servers(am_total=2, pm_total=2)
-        if day.name is 'Friday':
-            day.AMSandwichMaker = day.set_position_manually(Lisa)
-            day.AMGrill = day.set_position_manually(Tim)
-            day.AMServers.append(day.set_position_manually(Sherie))
-            day.set_kitchen()
-            day.set_servers(am_total=3, pm_total=3)
-            day.PMDinners = day.set_position(Dinners, 'PM')
-        if day.name is 'Saturday':
-            day.set_kitchen()
-            day.set_servers(am_total=2, pm_total=2)
-        total_empty_positions += day.empty_positions
-    if total_empty_positions == 0:  # Successful
-        return True
-    if total_empty_positions > 0:   # Unsuccessful
-        return False
+        day.setup()
+        if day.empty_positions > 0:  # Unsuccessful
+            return False
+    return True  # Successful
 
 
-def printout_test(week_list):
+def print_schedule(week_list):
     for day in week_list:
-        print('--', day.name, ' Staff --')
-        print('AMSandwichMaker: ', day.AMSandwichMaker.name)
-        print('AMGrill: ', day.AMGrill.name)
-        print('AMHelper: ', day.AMHelper.name)
-        for server in day.AMServers:
-            print('AMServer: ', server.name)
-        if day.name in ['Wednesday', 'Thursday', 'Friday', 'Saturday']:
-            print('PMSandwichMaker: ', day.PMSandwichMaker.name)
-            print('PMGrill: ', day.PMGrill.name)
-            print('PMHelper: ', day.PMHelper.name)
-            try:
-                print('PMDinners: ', day.PMDinners.name)
-            except AttributeError:
-                pass
-            for server in day.PMServers:
-                print('PMServer: ', server.name)
-        print('Empty Positions: ', day.empty_positions)
-        print('\n')
+        day.print()
 
 
 def initialize_week():
-    week = []
-    for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']:
-        current_day = Day(day)
-        week.append(current_day)
+    week = [Monday('Monday'), Tuesday('Tuesday'), Wednesday('Wednesday'), Thursday('Thursday'), Friday('Friday'),
+            Saturday('Saturday')]
     return week
 
 
 def run_once_and_print():
     week = initialize_week()
     set_schedule(week)
-    printout_test(week)
+    print_schedule(week)
 
 
-def run_till_completed():
+def run_until_completed_and_print():
     week = initialize_week()
     schedule_completed = set_schedule(week)
     while not schedule_completed:
         week = initialize_week()
         schedule_completed = set_schedule(week)
-    printout_test(week)
+    print_schedule(week)
 
 
 Tammy = Person('Tammy', ['Server'], dict(AM=[], PM=['All']))
@@ -269,21 +218,12 @@ Sara = Person('Sara', ['Server'], dict(AM=[], PM=[]))
 EMPTY = Person('-EMPTY-', [], dict(AM=['All'], PM=['All']))
 
 People = {Tammy, Lisa, Sherie, Tim, Peggy, Katie, Alex, Jamie, Rhiannon, Kara,
-              Nathan, Johnny, Joe, Sara}
-
+          Nathan, Johnny, Joe, Sara}
 SandwichMakers = set([p for p in People if 'SandwichMaker' in p.positions])
 Grillers = set([p for p in People if 'Griller' in p.positions])
 Helpers = set([p for p in People if 'Helper' in p.positions])
 Servers = set([p for p in People if 'Server' in p.positions])
 Dinners = set([p for p in People if 'Dinners' in p.positions])
 
-# run_once_and_print()
-# run_till_completed()
-
-Monday = Monday('Monday')
-Monday.setup()
-Monday.print()
-
-Friday = Friday('Friday')
-Friday.setup()
-Friday.print()
+#  run_once_and_print()
+run_until_completed_and_print()
