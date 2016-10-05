@@ -51,7 +51,7 @@ class Day:
             return chosen
         except IndexError:
             self.empty_positions += 1
-            return EMPTY
+            return Employees.EMPTY
 
     def set_pm_position(self, position_list):
         try:
@@ -60,9 +60,10 @@ class Day:
             return chosen
         except IndexError:
             self.empty_positions += 1
-            return EMPTY
+            return Employees.EMPTY
 
     def set_servers(self, am_total, pm_total):
+        Servers = Employees.get_servers()
         am_total -= len(self.AMServers)  # subtract servers set manually.
         pm_total -= len(self.PMServers)
         for server in range(am_total):
@@ -71,10 +72,13 @@ class Day:
             self.PMServers.append(self.set_pm_position(Servers))
 
     def set_kitchen(self):
+        SandwichMakers = Employees.get_sandwichmakers()
+        Grillers = Employees.get_grillers()
+        Helpers = Employees.get_helpers()
         if self.AMSandwichMaker is None:
             self.AMSandwichMaker = self.set_am_position(SandwichMakers)
         if self.PMSandwichMaker is None:
-            self.PMSandwichMaker = self.set_pm_position(SandwichMakers
+            self.PMSandwichMaker = self.set_pm_position(SandwichMakers)
         if self.AMGrill is None:
             self.AMGrill = self.set_am_position(Grillers)
         if self.PMGrill is None:
@@ -107,56 +111,56 @@ class Day:
 
 class Monday(Day):
     def setup(self):
-        self.set_availability(People)
-        self.AMSandwichMaker = self.set_position_manually(Lisa)
-        self.AMGrill = self.set_position_manually(Tim)
-        self.AMHelper = self.set_am_position(Helpers)
+        self.set_availability(Employees.people)
+        self.AMSandwichMaker = self.set_position_manually(Employees.Lisa)
+        self.AMGrill = self.set_position_manually(Employees.Tim)
+        self.AMHelper = self.set_am_position(Employees.get_helpers())
         self.set_servers(am_total=2, pm_total=0)
 
 
 class Tuesday(Day):
     def setup(self):
-        self.set_availability(People)
-        self.AMSandwichMaker = self.set_position_manually(Lisa)
-        self.AMGrill = self.set_position_manually(Tim)
-        self.AMHelper = self.set_am_position(Helpers)
+        self.set_availability(Employees.people)
+        self.AMSandwichMaker = self.set_position_manually(Employees.Lisa)
+        self.AMGrill = self.set_position_manually(Employees.Tim)
+        self.AMHelper = self.set_am_position(Employees.get_helpers())
         self.set_servers(am_total=2, pm_total=0)
 
 
 class Wednesday(Day):
     def setup(self):
-        self.set_availability(People)
-        self.AMSandwichMaker = self.set_position_manually(Lisa)
-        self.AMGrill = self.set_position_manually(Tim)
-        self.AMServers.append(self.set_position_manually(Sherie))
+        self.set_availability(Employees.people)
+        self.AMSandwichMaker = self.set_position_manually(Employees.Lisa)
+        self.AMGrill = self.set_position_manually(Employees.Tim)
+        self.AMServers.append(self.set_position_manually(Employees.Sherie))
         self.set_kitchen()
         self.set_servers(am_total=2, pm_total=2)
 
 
 class Thursday(Day):
     def setup(self):
-        self.set_availability(People)
-        self.AMSandwichMaker = self.set_position_manually(Lisa)
-        self.AMGrill = self.set_position_manually(Tim)
-        self.AMServers.append(self.set_position_manually(Sherie))
+        self.set_availability(Employees.people)
+        self.AMSandwichMaker = self.set_position_manually(Employees.Lisa)
+        self.AMGrill = self.set_position_manually(Employees.Tim)
+        self.AMServers.append(self.set_position_manually(Employees.Sherie))
         self.set_kitchen()
         self.set_servers(am_total=2, pm_total=2)
 
 
 class Friday(Day):
     def setup(self):
-        self.set_availability(People)
-        self.AMSandwichMaker = self.set_position_manually(Lisa)
-        self.AMGrill = self.set_position_manually(Tim)
-        self.AMServers.append(self.set_position_manually(Sherie))
+        self.set_availability(Employees.people)
+        self.AMSandwichMaker = self.set_position_manually(Employees.Lisa)
+        self.AMGrill = self.set_position_manually(Employees.Tim)
+        self.AMServers.append(self.set_position_manually(Employees.Sherie))
         self.set_kitchen()
         self.set_servers(am_total=3, pm_total=3)
-        self.PMDinners = self.set_pm_position(Dinners)
+        self.PMDinners = self.set_pm_position(Employees.get_dinners())
 
 
 class Saturday(Day):
     def setup(self):
-        self.set_availability(People)
+        self.set_availability(Employees.people)
         self.set_kitchen()
         self.set_servers(am_total=2, pm_total=2)
 
@@ -168,6 +172,44 @@ class Person:
         self.name = name
         self.positions = positions
         self.not_available = not_available
+
+
+class Employees:
+    def __init__(self):
+        self.Tammy = Person('Tammy', ['Server'], dict(AM=[], PM=['All']))
+        self.Lisa = Person('Lisa', ['SandwichMaker'], dict(AM=['Saturday'], PM=['All']))
+        self.Sherie = Person('Sherie', ['Server'], dict(AM=[], PM=['All']))
+        self.Tim = Person('Tim', ['Griller'], dict(AM=['Saturday'], PM=['All']))
+        self.Peggy = Person('Peggy', ['Server'], {'AM': [], 'PM': ['All']})
+        self.Katie = Person('Katie', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'], dict(AM=[], PM=[]))
+        self.Alex = Person('Alex', ['Griller', 'Helper', 'Dinners'], dict(AM=[], PM=[]))
+        self.Jamie = Person('Jamie', ['Server'], dict(AM=[], PM=[]))
+        self.Rhiannon = Person('Rhiannon', ['SandwichMaker', 'Griller', 'Helper', 'Server', 'Dinners'], dict(AM=[], PM=[]))
+        self.Kara = Person('Kara', ['Helper', 'Server', 'Dinners'], dict(AM=[], PM=[]))
+        self.Nathan = Person('Nathan', ['Griller', 'Helper', 'Server', 'Dinners'], dict(AM=['All'], PM=[]))
+        self.Johnny = Person('Johnny', ['Griller', 'Helper'], dict(AM=['All'], PM=[]))
+        self.Joe = Person('Joe', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'], dict(AM=[], PM=[]))
+        self.Sara = Person('Sara', ['Server'], dict(AM=[], PM=[]))
+        self.EMPTY = Person('-EMPTY-', [], dict(AM=['All'], PM=['All']))
+        self.people = {self.Tammy, self.Lisa, self.Sherie, self.Tim, self.Peggy,
+                       self.Katie, self.Alex, self.Jamie, self.Rhiannon,
+                       self.Kara, self.Nathan, self.Johnny, self.Joe, self.Sara}
+
+
+    def get_sandwichmakers(self):
+        return set([p for p in self.people if 'SandwichMaker' in p.positions])
+
+    def get_grillers(self):
+        return set([p for p in self.people if 'Griller' in p.positions])
+
+    def get_helpers(self):
+        return set([p for p in self.people if 'Helper' in p.positions])
+
+    def get_servers(self):
+        return set([p for p in self.people if 'Server' in p.positions])
+
+    def get_dinners(self):
+        return set([p for p in self.people if 'Dinners' in p.positions])
 
 
 def set_schedule(week_list):
@@ -203,30 +245,5 @@ def run_until_completed_and_print():
         schedule_completed = set_schedule(week)
     print_schedule(week)
 
-
-Tammy = Person('Tammy', ['Server'], dict(AM=[], PM=['All']))
-Lisa = Person('Lisa', ['SandwichMaker'], dict(AM=['Saturday'], PM=['All']))
-Sherie = Person('Sherie', ['Server'], dict(AM=[], PM=['All']))
-Tim = Person('Tim', ['Griller'], dict(AM=['Saturday'], PM=['All']))
-Peggy = Person('Peggy', ['Server'], {'AM': [], 'PM': ['All']})
-Katie = Person('Katie', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'], dict(AM=[], PM=[]))
-Alex = Person('Alex', ['Griller', 'Helper', 'Dinners'], dict(AM=[], PM=[]))
-Jamie = Person('Jamie', ['Server'], dict(AM=[], PM=[]))
-Rhiannon = Person('Rhiannon', ['SandwichMaker', 'Griller', 'Helper', 'Server', 'Dinners'], dict(AM=[], PM=[]))
-Kara = Person('Kara', ['Helper', 'Server', 'Dinners'], dict(AM=[], PM=[]))
-Nathan = Person('Nathan', ['Griller', 'Helper', 'Server', 'Dinners'], dict(AM=['All'], PM=[]))
-Johnny = Person('Johnny', ['Griller', 'Helper'], dict(AM=['All'], PM=[]))
-Joe = Person('Joe', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'], dict(AM=[], PM=[]))
-Sara = Person('Sara', ['Server'], dict(AM=[], PM=[]))
-EMPTY = Person('-EMPTY-', [], dict(AM=['All'], PM=['All']))
-
-People = {Tammy, Lisa, Sherie, Tim, Peggy, Katie, Alex, Jamie, Rhiannon, Kara,
-          Nathan, Johnny, Joe, Sara}
-SandwichMakers = set([p for p in People if 'SandwichMaker' in p.positions])
-Grillers = set([p for p in People if 'Griller' in p.positions])
-Helpers = set([p for p in People if 'Helper' in p.positions])
-Servers = set([p for p in People if 'Server' in p.positions])
-Dinners = set([p for p in People if 'Dinners' in p.positions])
-
-#  run_once_and_print()
+Employees = Employees()
 run_until_completed_and_print()
