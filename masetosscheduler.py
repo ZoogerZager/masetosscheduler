@@ -18,49 +18,39 @@ class Day:
         self.PMBusyPersons = set()
         self.empty_positions = 0
 
-    def build_availability(self, person_list):
+    def set_availability(self, person_list):
         for person in person_list:
-            if person.not_available['AM'] == self.name:
+            if self.name in person.not_available['AM']:
                 self.AMBusyPersons.add(person)
-            if person.not_available['AM'] == 'All':
+            if 'All' in person.not_available['AM']:
                 self.AMBusyPersons.add(person)
-            if person.not_available['PM'] == self.name:
+            if self.name in person.not_available['PM']:
                 self.PMBusyPersons.add(person)
-            if person.not_available['PM'] == 'All':
+            if 'All' in person.not_available['PM']:
                 self.PMBusyPersons.add(person)
 
-    def not_available(self, person):
+    def set_busy(self, person):
         assert isinstance(person, Person), "%r is not a Person Object" % person
         self.AMBusyPersons.add(person)
         self.PMBusyPersons.add(person)
 
     def set_position_manually(self, person):
         assert isinstance(person, Person), "%r is not a Person Object" % person
-        self.AMBusyPersons.add(person)
-        self.PMBusyPersons.add(person)
+        self.set_busy(person)
         return person
 
-    def get_free_am_employees(self, position_list):    # Hackish
-        position_list = copy(position_list)
-        for person in self.AMBusyPersons:
-            if person in position_list:
-                position_list.remove(person)
-        return position_list
+    def get_free_am_employees(self, position_list):
+        return list(position_list - self.AMBusyPersons)
 
     def get_free_pm_employees(self, position_list):
-        position_list = copy(position_list)
-        for person in self.PMBusyPersons:
-            if person in position_list:
-                position_list.remove(person)
-        return position_list
+        return list(position_list - self.PMBusyPersons)
 
     def set_position(self, position_list, shift):
         assert shift in ['AM', 'PM'], '%r shift should be "AM" or "PM"' % shift
         if shift is 'AM':
             try:
                 chosen = choice(self.get_free_am_employees(position_list))
-                self.AMBusyPersons.add(chosen)
-                self.PMBusyPersons.add(chosen)
+                self.set_busy(chosen)
                 return chosen
             except IndexError:
                 self.empty_positions += 1
@@ -68,8 +58,7 @@ class Day:
         if shift is 'PM':
             try:
                 chosen = choice(self.get_free_pm_employees(position_list))
-                self.AMBusyPersons.add(chosen)
-                self.PMBusyPersons.add(chosen)
+                self.set_busy(chosen)
                 return chosen
             except IndexError:
                 self.empty_positions += 1
@@ -110,7 +99,7 @@ class Person:
 def set_schedule(week_list):
     total_empty_positions = 0
     for day in week_list:
-        day.build_availability(People)
+        day.set_availability(People)
         if day.name in ['Monday', 'Tuesday']:
             day.AMSandwichMaker = day.set_position_manually(Lisa)
             day.AMGrill = day.set_position_manually(Tim)
@@ -140,7 +129,7 @@ def set_schedule(week_list):
         total_empty_positions += day.empty_positions
     if total_empty_positions == 0:  # Successful
         return True
-    if total_empty_positions > 0:  # Unsuccessful
+    if total_empty_positions > 0:   # Unsuccessful
         return False
 
 
@@ -188,31 +177,31 @@ def run_till_completed():
         schedule_completed = set_schedule(week)
     printout_test(week)
 
-#TODO The Availability Dicts should have lists as values
-Tammy = Person('Tammy', ['Server'], dict(AM=None, PM='All'))
-Lisa = Person('Lisa', ['SandwichMaker'], dict(AM='Saturday', PM='All'))
-Sherie = Person('Sherie', ['Server'], dict(AM=None, PM='All'))
-Tim = Person('Tim', ['Griller'], dict(AM='Saturday', PM='All'))
-Peggy = Person('Peggy', ['Server'], {'AM': None, 'PM': 'All'})
-Katie = Person('Katie', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'], dict(AM=None, PM=None))
-Alex = Person('Alex', ['Griller', 'Helper', 'Dinners'], dict(AM=None, PM=None))
-Jamie = Person('Jamie', ['Server'], dict(AM=None, PM=None))
-Rhiannon = Person('Rhiannon', ['SandwichMaker', 'Griller', 'Helper', 'Server', 'Dinners'], dict(AM=None, PM=None))
-Kara = Person('Kara', ['Helper', 'Server', 'Dinners'], dict(AM=None, PM=None))
-Nathan = Person('Nathan', ['Griller', 'Helper', 'Server', 'Dinners'], dict(AM='All', PM=None))
-Johnny = Person('Johnny', ['Griller', 'Helper'], dict(AM='All', PM=None))
-Joe = Person('Joe', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'], dict(AM=None, PM=None))
-Sara = Person('Sara', ['Server'], dict(AM=None, PM=None))
-EMPTY = Person('-EMPTY-', [], dict(AM='All', PM='All'))
 
-People = [Tammy, Lisa, Sherie, Tim, Peggy, Katie, Alex, Jamie, Rhiannon, Kara,
-          Nathan, Johnny, Joe, Sara]
+Tammy = Person('Tammy', ['Server'], dict(AM=[], PM=['All']))
+Lisa = Person('Lisa', ['SandwichMaker'], dict(AM=['Saturday'], PM=['All']))
+Sherie = Person('Sherie', ['Server'], dict(AM=[], PM=['All']))
+Tim = Person('Tim', ['Griller'], dict(AM=['Saturday'], PM=['All']))
+Peggy = Person('Peggy', ['Server'], {'AM': [], 'PM': ['All']})
+Katie = Person('Katie', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'], dict(AM=[], PM=[]))
+Alex = Person('Alex', ['Griller', 'Helper', 'Dinners'], dict(AM=[], PM=[]))
+Jamie = Person('Jamie', ['Server'], dict(AM=[], PM=[]))
+Rhiannon = Person('Rhiannon', ['SandwichMaker', 'Griller', 'Helper', 'Server', 'Dinners'], dict(AM=[], PM=[]))
+Kara = Person('Kara', ['Helper', 'Server', 'Dinners'], dict(AM=[], PM=[]))
+Nathan = Person('Nathan', ['Griller', 'Helper', 'Server', 'Dinners'], dict(AM=['All'], PM=[]))
+Johnny = Person('Johnny', ['Griller', 'Helper'], dict(AM=['All'], PM=[]))
+Joe = Person('Joe', ['SandwichMaker', 'Griller', 'Helper', 'Dinners'], dict(AM=[], PM=[]))
+Sara = Person('Sara', ['Server'], dict(AM=[], PM=[]))
+EMPTY = Person('-EMPTY-', [], dict(AM=['All'], PM=['All']))
 
-SandwichMakers = [p for p in People if 'SandwichMaker' in p.positions]
-Grillers = [p for p in People if 'Griller' in p.positions]
-Helpers = [p for p in People if 'Helper' in p.positions]
-Servers = [p for p in People if 'Server' in p.positions]
-Dinners = [p for p in People if 'Dinners' in p.positions]
+People = {Tammy, Lisa, Sherie, Tim, Peggy, Katie, Alex, Jamie, Rhiannon, Kara,
+              Nathan, Johnny, Joe, Sara}
+
+SandwichMakers = set([p for p in People if 'SandwichMaker' in p.positions])
+Grillers = set([p for p in People if 'Griller' in p.positions])
+Helpers = set([p for p in People if 'Helper' in p.positions])
+Servers = set([p for p in People if 'Server' in p.positions])
+Dinners = set([p for p in People if 'Dinners' in p.positions])
 
 # run_once_and_print()
 run_till_completed()
