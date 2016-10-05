@@ -44,17 +44,20 @@ class Day:
     def get_free_pm_employees(self, position_list):
         return list(position_list - self.PMBusyPersons)
 
-    def set_position(self, position_list, shift):
-        assert shift in ['AM', 'PM'], '%r shift should be "AM" or "PM"' % shift
+    def set_am_position(self, position_list):
         try:
-            if shift is 'AM':
-                chosen = choice(self.get_free_am_employees(position_list))
-                self.set_busy(chosen)
-                return chosen
-            if shift is 'PM':
-                chosen = choice(self.get_free_pm_employees(position_list))
-                self.set_busy(chosen)
-                return chosen
+            chosen = choice(self.get_free_am_employees(position_list))
+            self.set_busy(chosen)
+            return chosen
+        except IndexError:
+            self.empty_positions += 1
+            return EMPTY
+
+    def set_pm_position(self, position_list):
+        try:
+            chosen = choice(self.get_free_pm_employees(position_list))
+            self.set_busy(chosen)
+            return chosen
         except IndexError:
             self.empty_positions += 1
             return EMPTY
@@ -63,25 +66,25 @@ class Day:
         am_total -= len(self.AMServers)  # subtract servers set manually.
         pm_total -= len(self.PMServers)
         for server in range(am_total):
-            self.AMServers.append(self.set_position(Servers, 'AM'))
+            self.AMServers.append(self.set_am_position(Servers))
         for server in range(pm_total):
-            self.PMServers.append(self.set_position(Servers, 'PM'))
+            self.PMServers.append(self.set_pm_position(Servers))
 
     def set_kitchen(self):
         if self.AMSandwichMaker is None:
-            self.AMSandwichMaker = self.set_position(SandwichMakers, 'AM')
+            self.AMSandwichMaker = self.set_am_position(SandwichMakers)
         if self.PMSandwichMaker is None:
-            self.PMSandwichMaker = self.set_position(SandwichMakers, 'PM')
+            self.PMSandwichMaker = self.set_pm_position(SandwichMakers
         if self.AMGrill is None:
-            self.AMGrill = self.set_position(Grillers, 'AM')
+            self.AMGrill = self.set_am_position(Grillers)
         if self.PMGrill is None:
-            self.PMGrill = self.set_position(Grillers, 'PM')
+            self.PMGrill = self.set_pm_position(Grillers)
         if self.AMHelper is None:
-            self.AMHelper = self.set_position(Helpers, 'AM')
+            self.AMHelper = self.set_am_position(Helpers)
         if self.PMHelper is None:
-            self.PMHelper = self.set_position(Helpers, 'PM')
+            self.PMHelper = self.set_pm_position(Helpers)
 
-    def print(self):
+    def print_day_schedule(self):
         print('--', self.name, ' Staff --')
         print('AMSandwichMaker: ', self.AMSandwichMaker.name)
         print('AMGrill: ', self.AMGrill.name)
@@ -107,7 +110,7 @@ class Monday(Day):
         self.set_availability(People)
         self.AMSandwichMaker = self.set_position_manually(Lisa)
         self.AMGrill = self.set_position_manually(Tim)
-        self.AMHelper = self.set_position(Helpers, 'AM')
+        self.AMHelper = self.set_am_position(Helpers)
         self.set_servers(am_total=2, pm_total=0)
 
 
@@ -116,7 +119,7 @@ class Tuesday(Day):
         self.set_availability(People)
         self.AMSandwichMaker = self.set_position_manually(Lisa)
         self.AMGrill = self.set_position_manually(Tim)
-        self.AMHelper = self.set_position(Helpers, 'AM')
+        self.AMHelper = self.set_am_position(Helpers)
         self.set_servers(am_total=2, pm_total=0)
 
 
@@ -148,7 +151,7 @@ class Friday(Day):
         self.AMServers.append(self.set_position_manually(Sherie))
         self.set_kitchen()
         self.set_servers(am_total=3, pm_total=3)
-        self.PMDinners = self.set_position(Dinners, 'PM')
+        self.PMDinners = self.set_pm_position(Dinners)
 
 
 class Saturday(Day):
@@ -177,7 +180,7 @@ def set_schedule(week_list):
 
 def print_schedule(week_list):
     for day in week_list:
-        day.print()
+        day.print_day_schedule()
 
 
 def initialize_week():
