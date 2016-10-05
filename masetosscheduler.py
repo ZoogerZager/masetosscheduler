@@ -47,22 +47,18 @@ class Day:
 
     def set_position(self, position_list, shift):
         assert shift in ['AM', 'PM'], '%r shift should be "AM" or "PM"' % shift
-        if shift is 'AM':
-            try:
+        try:
+            if shift is 'AM':
                 chosen = choice(self.get_free_am_employees(position_list))
                 self.set_busy(chosen)
                 return chosen
-            except IndexError:
-                self.empty_positions += 1
-                return EMPTY
-        if shift is 'PM':
-            try:
+            if shift is 'PM':
                 chosen = choice(self.get_free_pm_employees(position_list))
                 self.set_busy(chosen)
                 return chosen
-            except IndexError:
-                self.empty_positions += 1
-                return EMPTY
+        except IndexError:
+            self.empty_positions += 1
+            return EMPTY
 
     def set_servers(self, am_total, pm_total):
         am_total -= len(self.AMServers)  # subtract servers set manually.
@@ -85,6 +81,84 @@ class Day:
             self.AMHelper = self.set_position(Helpers, 'AM')
         if self.PMHelper is None:
             self.PMHelper = self.set_position(Helpers, 'PM')
+
+    def print(self):
+        print('--', self.name, ' Staff --')
+        print('AMSandwichMaker: ', self.AMSandwichMaker.name)
+        print('AMGrill: ', self.AMGrill.name)
+        print('AMHelper: ', self.AMHelper.name)
+        for server in self.AMServers:
+            print('AMServer: ', server.name)
+        if self.name in ['Wednesday', 'Thursday', 'Friday', 'Saturday']:
+            print('PMSandwichMaker: ', self.PMSandwichMaker.name)
+            print('PMGrill: ', self.PMGrill.name)
+            print('PMHelper: ', self.PMHelper.name)
+            try:
+                print('PMDinners: ', self.PMDinners.name)
+            except AttributeError:
+                pass
+            for server in self.PMServers:
+                print('PMServer: ', server.name)
+        print('Empty Positions: ', self.empty_positions)
+        print('\n')
+
+
+
+class Monday(Day):
+    def setup(self):
+        self.set_availability(People)
+        self.AMSandwichMaker = self.set_position_manually(Lisa)
+        self.AMGrill = self.set_position_manually(Tim)
+        self.AMHelper = self.set_position(Helpers, 'AM')
+        self.set_servers(am_total=2, pm_total=0)
+
+
+class Tuesday(Day):
+    def setup(self):
+        self.set_availability(People)
+        self.AMSandwichMaker = self.set_position_manually(Lisa)
+        self.AMGrill = self.set_position_manually(Tim)
+        self.AMHelper = self.set_position(Helpers, 'AM')
+        self.set_servers(am_total=2, pm_total=0)
+
+
+class Wednesday(Day):
+    def setup(self):
+        self.set_availability(People)
+        self.AMSandwichMaker = self.set_position_manually(Lisa)
+        self.AMGrill = self.set_position_manually(Tim)
+        self.AMServers.append(self.set_position_manually(Sherie))
+        self.set_kitchen()
+        self.set_servers(am_total=2, pm_total=2)
+
+
+class Thursday(Day):
+    def setup(self):
+        self.set_availability(People)
+        self.AMSandwichMaker = self.set_position_manually(Lisa)
+        self.AMGrill = self.set_position_manually(Tim)
+        self.AMServers.append(self.set_position_manually(Sherie))
+        self.set_kitchen()
+        self.set_servers(am_total=2, pm_total=2)
+
+
+class Friday(Day):
+    def setup(self):
+        self.set_availability(People)
+        self.AMSandwichMaker = self.set_position_manually(Lisa)
+        self.AMGrill = self.set_position_manually(Tim)
+        self.AMServers.append(self.set_position_manually(Sherie))
+        self.set_kitchen()
+        self.set_servers(am_total=3, pm_total=3)
+        self.PMDinners = self.set_position(Dinners, 'PM')
+        return self.empty_positions
+
+
+class Saturday(Day):
+    def setup(self):
+        self.set_availability(People)
+        self.set_kitchen()
+        self.set_servers(am_total=2, pm_total=2)
 
 
 class Person:
@@ -204,4 +278,12 @@ Servers = set([p for p in People if 'Server' in p.positions])
 Dinners = set([p for p in People if 'Dinners' in p.positions])
 
 # run_once_and_print()
-run_till_completed()
+# run_till_completed()
+
+Monday = Monday('Monday')
+Monday.setup()
+Monday.print()
+
+Friday = Friday('Friday')
+Friday.setup()
+Friday.print()
