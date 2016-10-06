@@ -32,14 +32,18 @@ class Employees:
     def get_sandwichmakers(self):
         return set([p for p in self.people if 'SandwichMaker' in p.positions])
 
+
     def get_grillers(self):
         return set([p for p in self.people if 'Griller' in p.positions])
+
 
     def get_helpers(self):
         return set([p for p in self.people if 'Helper' in p.positions])
 
+
     def get_servers(self):
         return set([p for p in self.people if 'Server' in p.positions])
+
 
     def get_dinners(self):
         return set([p for p in self.people if 'Dinners' in p.positions])

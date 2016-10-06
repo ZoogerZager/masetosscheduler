@@ -12,17 +12,13 @@ class Schedule:
         return week
 
 
-    def set_schedule(self):
+    def generate_schedule(self):
+        self.week = self.initialize_week()
         for day in self.week:
             day.setup()
             if day.empty_positions > 0:  # Unsuccessful
                 return False
-        return True  # Successful
-
-
-    def generate_schedule(self):
-        self.week = self.initialize_week()
-        return self.set_schedule()
+        return True
 
 
     def generate_filled_schedule(self):

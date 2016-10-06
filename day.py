@@ -18,6 +18,7 @@ class Day:
         self.PMBusyPersons = set()
         self.empty_positions = 0
 
+
     def set_availability(self, person_list):
         for person in person_list:
             if self.name in person.not_available['AM']:
@@ -29,21 +30,26 @@ class Day:
             if 'All' in person.not_available['PM']:
                 self.PMBusyPersons.add(person)
 
+
     def set_busy(self, person):
         assert isinstance(person, Person), "%r is not a Person Object" % person
         self.AMBusyPersons.add(person)
         self.PMBusyPersons.add(person)
+
 
     def set_position_manually(self, person):
         assert isinstance(person, Person), "%r is not a Person Object" % person
         self.set_busy(person)
         return person
 
+
     def get_free_am_employees(self, position_list):
         return list(position_list - self.AMBusyPersons)
 
+
     def get_free_pm_employees(self, position_list):
         return list(position_list - self.PMBusyPersons)
+
 
     def set_am_position(self, position_list):
         try:
@@ -54,6 +60,7 @@ class Day:
             self.empty_positions += 1
             return Employees.EMPTY
 
+
     def set_pm_position(self, position_list):
         try:
             chosen = choice(self.get_free_pm_employees(position_list))
@@ -63,6 +70,7 @@ class Day:
             self.empty_positions += 1
             return Employees.EMPTY
 
+
     def set_servers(self, am_total, pm_total):
         Servers = Employees.get_servers()
         am_total -= len(self.AMServers)  # subtract servers set manually.
@@ -71,6 +79,7 @@ class Day:
             self.AMServers.append(self.set_am_position(Servers))
         for server in range(pm_total):
             self.PMServers.append(self.set_pm_position(Servers))
+
 
     def set_kitchen(self):
         SandwichMakers = Employees.get_sandwichmakers()
@@ -88,6 +97,7 @@ class Day:
             self.AMHelper = self.set_am_position(Helpers)
         if self.PMHelper is None:
             self.PMHelper = self.set_pm_position(Helpers)
+
 
     def write_out(self):
         lines =[]
@@ -110,6 +120,7 @@ class Day:
         lines.append('Empty Positions: ' + str(self.empty_positions))
         lines.append('\n')
         return lines
+
 
 class Monday(Day):
     def setup(self):
