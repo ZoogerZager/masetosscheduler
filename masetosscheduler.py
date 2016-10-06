@@ -31,11 +31,21 @@ class Schedule:
             schedule_completed = self.generate_schedule()
 
 
-    def print_schedule(self):
+    def print_to_console(self):
         for day in self.week:
-            day.print_day_schedule()
+            for line in day.write_out():
+                print(line)
+
+
+    def save_to_txt(self):
+        with open('schedule.txt', 'w') as f:
+            for day in self.week:
+                for line in day.write_out():
+                    f.write(line)
+                    f.write('\n')
 
 
 schedule = Schedule()
 schedule.generate_filled_schedule()
-schedule.print_schedule()
+schedule.print_to_console()
+schedule.save_to_txt()

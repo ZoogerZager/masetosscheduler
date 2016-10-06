@@ -89,26 +89,27 @@ class Day:
         if self.PMHelper is None:
             self.PMHelper = self.set_pm_position(Helpers)
 
-    def print_day_schedule(self):
-        print('--', self.name, ' Staff --')
-        print('AMSandwichMaker: ', self.AMSandwichMaker.name)
-        print('AMGrill: ', self.AMGrill.name)
-        print('AMHelper: ', self.AMHelper.name)
+    def write_out(self):
+        lines =[]
+        lines.append('-- ' + self.name + ' Staff --')
+        lines.append('AMSandwichMaker: ' + self.AMSandwichMaker.name)
+        lines.append('AMGrill: ' + self.AMGrill.name)
+        lines.append('AMHelper: ' + self.AMHelper.name)
         for server in self.AMServers:
-            print('AMServer: ', server.name)
+            lines.append(('AMServer: ' + server.name))
         if self.name in ['Wednesday', 'Thursday', 'Friday', 'Saturday']:
-            print('PMSandwichMaker: ', self.PMSandwichMaker.name)
-            print('PMGrill: ', self.PMGrill.name)
-            print('PMHelper: ', self.PMHelper.name)
+            lines.append('PMSandwichMaker: ' + self.PMSandwichMaker.name)
+            lines.append('PMGrill: ' + self.PMGrill.name)
+            lines.append('PMHelper: ' + self.PMHelper.name)
             try:
-                print('PMDinners: ', self.PMDinners.name)
+                lines.append('PMDinners: ' + self.PMDinners.name)
             except AttributeError:
                 pass
             for server in self.PMServers:
-                print('PMServer: ', server.name)
-        print('Empty Positions: ', self.empty_positions)
-        print('\n')
-
+                lines.append('PMServer: ' + server.name)
+        lines.append('Empty Positions: ' + str(self.empty_positions))
+        lines.append('\n')
+        return lines
 
 class Monday(Day):
     def setup(self):
